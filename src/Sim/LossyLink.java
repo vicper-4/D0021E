@@ -9,10 +9,10 @@ public class LossyLink extends Link{
 
     public LossyLink(int delay, float jitter, float droprate)
     {
+        super();
         this.delay = delay;
         this.jitter = jitter;
         this.droprate = droprate;
-        super();
     }
 
     @Override
