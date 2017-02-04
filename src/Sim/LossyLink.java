@@ -12,7 +12,6 @@ public class LossyLink extends Link{
     private float droprate;
 
     /**
-     *
      * @param delay     Avrage delay of message passing thru this link.
      * @param jitter    Jitter of the link.
      * @param droprate  Droprate of the link as probability from 0.0 - 1.0.
