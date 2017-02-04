@@ -32,7 +32,26 @@ public class LossyLink extends Link{
     @Override
     public void recv(SimEnt src, Event ev)
     {
-        //TODO implement delay, jitter and loss
+        if (ev instanceof Message)
+        {
+            //TODO implement delay and jitter
+            if (1.0f - Random().nextFloat() > delay)
+            {
+                System.out.println("Link recv msg, passes it through");
+			    if (src == _connectorA)
+			    {
+			    	send(_connectorB, ev, _now);
+			    }
+			    else
+			    {
+			    	send(_connectorA, ev, _now);
+			    }
+            }
+            else
+            {
+                System.out.println("Link recv msg, drops it");
+            }
+        }
     }
 }
 
