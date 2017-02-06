@@ -5,18 +5,17 @@ import java.util.Random;
 /**
  * This implements a link with loss, jitter and delay.
  */
-
 public class LossyLink extends Link{
-    private int delay;
+    private float delay;
     private float jitter;
     private float droprate;
 
     /**
-     * @param delay     Avrage delay of message passing thru this link.
-     * @param jitter    Jitter of the link.
-     * @param droprate  Droprate of the link as probability from 0.0 - 1.0.
+     * @param delay     Avrage delay of message passing thru this link. (ms)
+     * @param jitter    Jitter of the link. Random uniform distribution. (ms)
+     * @param droprate  Droprate of the link as probability from 0.0 - 1.0. 
      */
-    public LossyLink(int delay, float jitter, float droprate)
+    public LossyLink(float delay, float jitter, float droprate)
     {
         super();
         this.delay = delay;
@@ -36,8 +35,8 @@ public class LossyLink extends Link{
         if (ev instanceof Message)
         {
             Random random = new Random();
-            //TODO implement jitter
-            int wait = (int)(delay + jitter);
+            float dt = (random.nextFloat() * 2 - 1) * jitter;
+            double wait = delay + dt;
             if (1.0f - random.nextFloat() > droprate)
             {
                 System.out.println("Link recv msg, passes it through");
