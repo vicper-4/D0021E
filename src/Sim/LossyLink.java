@@ -1,6 +1,6 @@
-import java.util.Random;
-
 package Sim;
+
+import java.util.Random;
 
 /**
  * This implements a link with loss, jitter and delay.
@@ -35,17 +35,19 @@ public class LossyLink extends Link{
     {
         if (ev instanceof Message)
         {
-            //TODO implement delay and jitter
-            if (1.0f - Random().nextFloat() > delay)
+            Random random = new Random();
+            //TODO implement jitter
+            int wait = (int)(delay + jitter);
+            if (1.0f - random.nextFloat() > delay)
             {
                 System.out.println("Link recv msg, passes it through");
 			    if (src == _connectorA)
 			    {
-			    	send(_connectorB, ev, _now);
+			    	send(_connectorB, ev, wait);
 			    }
 			    else
 			    {
-			    	send(_connectorA, ev, _now);
+			    	send(_connectorA, ev, wait);
 			    }
             }
             else
