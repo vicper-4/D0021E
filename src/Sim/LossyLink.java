@@ -38,7 +38,7 @@ public class LossyLink extends Link{
             Random random = new Random();
             //TODO implement jitter
             int wait = (int)(delay + jitter);
-            if (1.0f - random.nextFloat() > delay)
+            if (1.0f - random.nextFloat() > droprate)
             {
                 System.out.println("Link recv msg, passes it through");
 			    if (src == _connectorA)
