@@ -19,7 +19,14 @@ public class LossyLink extends Link{
 	{
 		super();
 		this.delay = delay;
-		this.jitter = jitter;
+        if(jitter < delay){
+		    this.jitter = jitter;
+        }
+        else
+        {
+            this.jitter = delay;
+        }
+
 		this.droprate = droprate;
 	}
 
@@ -51,7 +58,7 @@ public class LossyLink extends Link{
 			}
 			else
 			{
-				System.out.println("!!-\t LossyLink recv msg, randomly drops it");
+				//System.out.println("!!-\t LossyLink recv msg, randomly drops it");
 			}
 		}
 	}
