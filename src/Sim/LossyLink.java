@@ -58,7 +58,7 @@ public class LossyLink extends Link{
 			}
 			else
 			{
-				//System.out.println("!!-\t LossyLink recv msg, randomly drops it");
+				System.out.println("!!\t - LossyLink recv msg, randomly drops it");
 			}
 		}
 	}

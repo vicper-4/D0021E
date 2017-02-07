@@ -103,7 +103,7 @@ public final class SimEngine implements Runnable {
 		System.out.println("-------");
 		System.out.println("Droprate: " + (int) (((double) (_sent - _recv) / (double) _sent) * 100) + "% sent: " + _sent + ", received: " + _recv);
 		System.out.println("Average transit time: " + totalTransit / _recv + "ms");
-		System.out.println("Jitter: " + jitter + "ms");
+		System.out.println("Average jitter: " + jitter + "ms");
 		reset();
 	}
 
@@ -115,7 +115,7 @@ public final class SimEngine implements Runnable {
 		if (d < 0) d = -d;
 		jitter += (1.0 / ((double) _recv)) * (d - jitter);
 		transit = tt;
-		System.out.println("Current average jitter: " + jitter + "ms");
+		System.out.println(":: Current average jitter: " + jitter + "ms");
 	}
 
 	public static void msgSent() {
