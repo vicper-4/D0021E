@@ -39,7 +39,7 @@ public class LossyLink extends Link{
 			double wait = delay + dt;
 			if (1.0f - random.nextFloat() > droprate)
 			{
-				System.out.println("Link recv msg, passes it through");
+				//System.out.println("Link recv msg, passes it through");
 				if (src == _connectorA)
 				{
 					send(_connectorB, ev, wait);
@@ -51,7 +51,7 @@ public class LossyLink extends Link{
 			}
 			else
 			{
-				System.out.println("Link recv msg, drops it");
+				System.out.println("!!-\t LossyLink recv msg, randomly drops it");
 			}
 		}
 	}
