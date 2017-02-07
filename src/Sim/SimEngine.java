@@ -98,26 +98,27 @@ public final class SimEngine implements Runnable {
 				deregister(handleToNextEvent);
 			}
 		} while (!_quit);
-        System.out.println("droprate: " + (int)(((double)_recv / (double)_sent)*100) + "% ent: " + _sent + "recived: " + _recv);
-        System.out.println("average transit time: " + totalTransit/_recv + "ms");
-        System.out.println("jitter: " + jitter + "ms");
+
+		System.out.println("\nResults");
+		System.out.println("-------");
+		System.out.println("Droprate: " + (int) (((double) (_sent - _recv) / (double) _sent) * 100) + "% sent: " + _sent + ", received: " + _recv);
+		System.out.println("Average transit time: " + totalTransit / _recv + "ms");
+		System.out.println("Jitter: " + jitter + "ms");
 		reset();
 	}
 
-    public static void msgRecv(double tt)
-    {
-        _recv++;
-        totalTransit += tt;
+	public static void msgRecv(double tt) {
+		_recv++;
+		totalTransit += tt;
 
-        double d = tt - transit;
-        if (d < 0) d = -d;
-        jitter += (1.0/((double)_recv)) * (d - jitter);
-        transit = tt;
-        System.out.println("jitter: " + jitter + "ms");
-    }
+		double d = tt - transit;
+		if (d < 0) d = -d;
+		jitter += (1.0 / ((double) _recv)) * (d - jitter);
+		transit = tt;
+		System.out.println("Current average jitter: " + jitter + "ms");
+	}
 
-    public static void msgSent()
-    {
-        _sent++;
-    }
+	public static void msgSent() {
+		_sent++;
+	}
 }
