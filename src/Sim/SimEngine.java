@@ -12,6 +12,10 @@ public final class SimEngine implements Runnable {
 	private final TreeMap _simTimeTree = new TreeMap();
 	private boolean _quit = false;
 	private static double _simTime = 0;
+
+    private int _recv = 0;
+    private double transit = 0;
+    private double jitter = 0;
 	
 	
 	// This method is called to when scheduling an event for some target. Examples of events are messages,
@@ -95,4 +99,12 @@ public final class SimEngine implements Runnable {
 		} while (!_quit);
 		reset();
 	}
+    public void msgRecv(double tt)
+    {
+        _recv++;
+        //int d = tt - transit;
+        //if (d < 0) d = -d;
+        //jitter += (1.0/16.0) * ((double)d - jitter);
+    }
+
 }
