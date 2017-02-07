@@ -12,11 +12,10 @@ public final class SimEngine implements Runnable {
 	private final TreeMap _simTimeTree = new TreeMap();
 	private boolean _quit = false;
 	private static double _simTime = 0;
-    private static int _sent = 0;
-    private static int _recv = 0;
-    private static double transit = 0;
-    private static double totalTransit = 0;
-    private static double jitter = 0;
+	private static int _sent = 0; //messages sent from nodes
+	private static int _recv = 0; //messages recived by nodes
+	private static double totalTransit = 0; //sum of ransit times of all packages.	
+	private static double jitter = 0; //jitter of the system
 	
 	
 	// This method is called to when scheduling an event for some target. Examples of events are messages,
@@ -60,6 +59,11 @@ public final class SimEngine implements Runnable {
 		_simTimeTree.clear();
 		_simTime = 0;
 		_quit = false;
+
+		_sent = 0;
+		_recv = 0;
+		totalTransit = 0;
+		jitter = 0;
 	}
 	
 	
@@ -99,6 +103,7 @@ public final class SimEngine implements Runnable {
 			}
 		} while (!_quit);
 
+		//Prints results at end or run. 
 		System.out.println("\nResults");
 		System.out.println("-------");
 		System.out.println("Droprate: " + (int) (((double) (_sent - _recv) / (double) _sent) * 100) + "% sent: " + _sent + ", received: " + _recv);
@@ -107,17 +112,25 @@ public final class SimEngine implements Runnable {
 		reset();
 	}
 
+	/**
+	 * Called when a node recives a message
+	 * @param tt	The transit time of the message
+	 */
 	public static void msgRecv(double tt) {
 		_recv++;
 		totalTransit += tt;
 
-		double d = tt - transit;
+		//Algorithm from RFC1889 A.8
+		double d = tt - totalTransit/_recv;
 		if (d < 0) d = -d;
 		jitter += (1.0 / ((double) _recv)) * (d - jitter);
-		transit = tt;
+
 		System.out.println(":: Current average jitter: " + jitter + "ms");
 	}
 
+	/**
+	 * Called when a node sends a message
+	 */
 	public static void msgSent() {
 		_sent++;
 	}
