@@ -43,7 +43,7 @@ public class Node extends SimEnt {
 	private int _timeBetweenSending = 10; //time between messages
 	private int _toNetwork = 0;
 	private int _toHost = 0;
-	
+
 	public void StartSending(int network, int node, int number, int timeInterval, int startSeq)
 	{
 		_stopSendingAfter = number;
@@ -53,8 +53,8 @@ public class Node extends SimEnt {
 		_seq = startSeq;
 		send(this, new TimerEvent(),0);	
 	}
-	
-//**********************************************************************************	
+
+//**********************************************************************************
 	
 	// This method is called upon that an event destined for this node triggers.
 	
@@ -68,14 +68,18 @@ public class Node extends SimEnt {
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
 				send(this, new TimerEvent(),_timeBetweenSending);
                 SimEngine.msgSent();
-				System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" sent message with seq: "+_seq + " at time "+SimEngine.getTime());
+				System.out.println("Node " + _id.networkId() + "."
+						+ _id.nodeId() + " sent message with seq: " + _seq + " at time " + SimEngine.getTime());
 				_seq++;
 			}
 		}
 		if (ev instanceof Message)
 		{
 			double currTime = SimEngine.getTime();
-			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" receives message with seq: "+((Message) ev).seq() + " at time "+SimEngine.getTime() + "It took " + (currTime-((Message) ev).timeSent) + " ms.");
+			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
+					+ " receives message with seq: " + ((Message) ev).seq()
+					+ " at time " + SimEngine.getTime()
+					+ " It took " + (currTime-((Message) ev).timeSent) + " ms.");
 			SimEngine.msgRecv(currTime-((Message) ev).timeSent);
 		}
 	}
