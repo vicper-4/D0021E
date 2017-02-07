@@ -1,5 +1,8 @@
 package Sim;
 
+import java.sql.Time;
+import java.util.Date;
+
 // This class implements a node (host) it has an address, a peer that it communicates with
 // and it count messages send and received.
 
@@ -73,7 +76,8 @@ public class Node extends SimEnt {
 		}
 		if (ev instanceof Message)
 		{
-			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" receives message with seq: "+((Message) ev).seq() + " at time "+SimEngine.getTime());
+			double currTime = SimEngine.getTime();
+			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" receives message with seq: "+((Message) ev).seq() + " at time "+SimEngine.getTime() + "It took " + (currTime-((Message) ev).timeSent) + " ms.");
 			
 		}
 	}

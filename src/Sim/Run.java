@@ -19,14 +19,14 @@ public class Run {
 		host2.setPeer(link2);
 
 		// Creates as router and connect
-		// links to it. Information about 
+		// links to it. Information about
 		// the host connected to the other
 		// side of the link is also provided
 		// Note. A switch is created in same way using the Switch class
 		Router routeNode = new Router(2);
 		routeNode.connectInterface(0, link1, host1);
 		routeNode.connectInterface(1, link2, host2);
-		
+
 		// Generate some traffic
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
 		host1.StartSending(2, 2, 500, 5, 1); 
@@ -35,7 +35,7 @@ public class Run {
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
-	
+
 		t.start();
 		try
 		{
@@ -44,9 +44,6 @@ public class Run {
 		catch (Exception e)
 		{
 			System.out.println("The motor seems to have a problem, time for service?");
-		}		
-
-
-
+		}
 	}
 }

@@ -1,16 +1,19 @@
 package Sim;
+import java.util.Date;
 
 // This class implements an event that send a Message, currently the only
 // fields in the message are who the sender is, the destination and a sequence 
 // number
 
 public class Message implements Event{
+	final double timeSent;
 	private NetworkAddr _source;
 	private NetworkAddr _destination;
 	private int _seq=0;
 	
 	Message (NetworkAddr from, NetworkAddr to, int seq)
 	{
+		timeSent = SimEngine.getTime();
 		_source = from;
 		_destination = to;
 		_seq=seq;
