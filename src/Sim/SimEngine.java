@@ -3,7 +3,7 @@ package Sim;
 import java.util.TreeMap;
 
 // This class implements the simulation engine
-// As long as there are events in the queue, the simulaiton 
+// As long as there are events in the queue, the simulation 
 // will run. When empty, the engine stops
 
 public final class SimEngine implements Runnable {
@@ -12,10 +12,10 @@ public final class SimEngine implements Runnable {
 	private final TreeMap _simTimeTree = new TreeMap();
 	private boolean _quit = false;
 	private static double _simTime = 0;
-	private static int _sent = 0; //messages sent from nodes
-	private static int _recv = 0; //messages recived by nodes
-	private static double totalTransit = 0; //sum of ransit times of all packages.	
-	private static double jitter = 0; //jitter of the system
+	private static int _sent = 0;           //messages sent from nodes
+	private static int _recv = 0;           //messages received by nodes
+	private static double totalTransit = 0; //sum of transit times of all packages.
+	private static double jitter = 0;       //jitter of the system
 	
 	
 	// This method is called to when scheduling an event for some target. Examples of events are messages,
