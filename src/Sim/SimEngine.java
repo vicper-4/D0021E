@@ -1,5 +1,7 @@
 package Sim;
 
+import com.sun.xml.internal.bind.v2.TODO;
+
 import java.util.TreeMap;
 
 // This class implements the simulation engine
@@ -112,6 +114,7 @@ public final class SimEngine implements Runnable {
 		reset();
 	}
 
+	//TODO: Move this functionality to node.msgRecv
 	/**
 	 * Called when a node recives a message
 	 * @param tt	The transit time of the message

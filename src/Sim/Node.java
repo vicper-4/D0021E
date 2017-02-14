@@ -4,6 +4,12 @@ package Sim;
 // and it count messages send and received.
 
 public class Node extends SimEnt {
+	// TODO check that this shit is optimal:
+	private static int _recv;
+	private static double totalTransit;
+	private static double jitter;
+	// end
+
 	private NetworkAddr _id;
 	private SimEnt _peer;
 	private int _sentmsg=0;
@@ -67,7 +73,9 @@ public class Node extends SimEnt {
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
 				send(this, new TimerEvent(),_timeBetweenSending);
-                SimEngine.msgSent();
+				SimEngine.msgSent();
+
+				// Presentation:
 				System.out.println("Node " + _id.networkId() + "."
 						+ _id.nodeId() + " sent message with seq: " + _seq + " at time " + SimEngine.getTime());
 				_seq++;
@@ -80,7 +88,26 @@ public class Node extends SimEnt {
 					+ " receives message with seq: " + ((Message) ev).seq()
 					+ " at time " + SimEngine.getTime()
 					+ " It took " + (currTime-((Message) ev).timeSent) + " ms.");
-			SimEngine.msgRecv(currTime-((Message) ev).timeSent);
+
+			// TODO: move this functionality to this class.
+			msgRecv(currTime - ((Message) ev).timeSent);
 		}
+	}
+
+	/**
+	 * Called when a node recives a message
+	 *
+	 * @param tt The transit time of the message
+	 */
+	public static void msgRecv(double tt) {
+		_recv++;
+		totalTransit += tt;
+
+		//Algorithm from RFC1889 A.8
+		double d = tt - totalTransit / _recv;
+		if (d < 0) d = -d;
+		jitter += (1.0 / ((double) _recv)) * (d - jitter);
+
+		System.out.println(":: Current average jitter: " + jitter + "ms");
 	}
 }
