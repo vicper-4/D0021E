@@ -4,11 +4,6 @@ package Sim;
 // and it count messages send and received.
 
 public class Node extends SimEnt {
-	// TODO check that this shit is optimal:
-	private static int _recv;
-	private static double totalTransit;
-	private static double jitter;
-	// end
 
 	private NetworkAddr _id;
 	private SimEnt _peer;
@@ -20,7 +15,7 @@ public class Node extends SimEnt {
 	{
 		super();
 		_id = new NetworkAddr(network, node);
-	}	
+	}
 	
 	
 	// Sets the peer to communicate with. This node is single homed
@@ -86,28 +81,10 @@ public class Node extends SimEnt {
 			double currTime = SimEngine.getTime();
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
 					+ " receives message with seq: " + ((Message) ev).seq()
-					+ " at time " + SimEngine.getTime()
+					+ " at time " + currTime
 					+ " It took " + (currTime-((Message) ev).timeSent) + " ms.");
 
-			// TODO: move this functionality to this class.
-			msgRecv(currTime - ((Message) ev).timeSent);
+			calculateJitter(currTime - ((Message) ev).timeSent);
 		}
-	}
-
-	/**
-	 * Called when a node recives a message
-	 *
-	 * @param tt The transit time of the message
-	 */
-	public static void msgRecv(double tt) {
-		_recv++;
-		totalTransit += tt;
-
-		//Algorithm from RFC1889 A.8
-		double d = tt - totalTransit / _recv;
-		if (d < 0) d = -d;
-		jitter += (1.0 / ((double) _recv)) * (d - jitter);
-
-		System.out.println(":: Current average jitter: " + jitter + "ms");
 	}
 }

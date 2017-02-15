@@ -4,7 +4,11 @@ package Sim;
 // need to inherit from this class
 
 public abstract class SimEnt {
-	
+
+
+	private int _recv;
+	private double totalTransit;
+	private double jitter;
 
 	protected SimEnt()
 	{	
@@ -30,6 +34,7 @@ public abstract class SimEnt {
 	protected final EventHandle send(SimEnt destination, Event event, double delayExecution)
 	{
 		// this object is the registrator/source submitting the event
+		// TODO: Should check that it doesnt send a message in negative time and otherwise throw an exception
 		return SimEngine.instance().register(this, destination, event, delayExecution);
 	}
 	
@@ -43,7 +48,28 @@ public abstract class SimEnt {
 	
 	
 	// To be implemented in child classes acting on events/messages received
-	
+
 	public abstract void recv(SimEnt source, Event event);
-	
+
+	/**
+	 * Called when a node recives a message
+	 *
+	 * @param tt The transit time of the message
+	 */
+	public void calculateJitter(double tt) {
+		_recv++;
+		totalTransit += tt;
+
+		//Algorithm from RFC1889 A.8
+		double d = tt - totalTransit / _recv;
+		if (d < 0) d = -d;
+		jitter += (1.0 / ((double) _recv)) * (d - jitter);
+
+		System.out.println(":: Current average jitter: " + jitter + "ms");
+	}
+
+	public double getJitter() {
+		return jitter;
+	}
+
 }

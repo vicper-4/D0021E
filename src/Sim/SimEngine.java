@@ -92,18 +92,26 @@ public final class SimEngine implements Runnable {
 		
 		do
 		{
-			if (_simTimeTree.size() == 0) 
+			if (_simTimeTree.size() == 0)
 				_quit=true;
 			else
 			{
 				nextEventToExecute = (SimTimeSlot) _simTimeTree.firstKey();
 				handleToNextEvent = (EventHandle) _simTimeTree.get(nextEventToExecute);
 				_simTime=nextEventToExecute._msek;
+
+				// Calculate jitter
+				jitter = handleToNextEvent._target.getJitter();
+				System.out.println("\t -Simengine currjitter: " + jitter + "-");
+
 				handleToNextEvent._event.entering(handleToNextEvent._target);
 				handleToNextEvent._target.recv(handleToNextEvent._registrator, handleToNextEvent._event);
 				deregister(handleToNextEvent);
 			}
 		} while (!_quit);
+
+		// Collect data
+		//jitter = Node.getJitter(); //TODO: Should reference the end node in a transaction.
 
 		//Prints results at end or run. 
 		System.out.println("\nResults");
@@ -112,23 +120,6 @@ public final class SimEngine implements Runnable {
 		System.out.println("Average transit time: " + totalTransit / _recv + "ms");
 		System.out.println("Average jitter: " + jitter + "ms");
 		reset();
-	}
-
-	//TODO: Move this functionality to node.msgRecv
-	/**
-	 * Called when a node recives a message
-	 * @param tt	The transit time of the message
-	 */
-	public static void msgRecv(double tt) {
-		_recv++;
-		totalTransit += tt;
-
-		//Algorithm from RFC1889 A.8
-		double d = tt - totalTransit/_recv;
-		if (d < 0) d = -d;
-		jitter += (1.0 / ((double) _recv)) * (d - jitter);
-
-		System.out.println(":: Current average jitter: " + jitter + "ms");
 	}
 
 	/**
