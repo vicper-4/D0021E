@@ -1,5 +1,6 @@
 package Sim;
 
+//TODO figure out why this gives verry stable values that are way too small
 /**
  * Generator for Poisson distridution.
  */
