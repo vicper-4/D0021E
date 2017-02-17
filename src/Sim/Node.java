@@ -69,8 +69,8 @@ public class Node extends SimEnt {
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
 															 _toHost),
-										_seq), gen.nextSend());
-				send(this, new TimerEvent(),_timeBetweenSending);
+										_seq), 0);
+				send(this, new TimerEvent(),gen.nextSend());
 				SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
 
 				// Presentation:
