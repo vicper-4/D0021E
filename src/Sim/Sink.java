@@ -100,7 +100,7 @@ public class Sink
         }
         else
         {
-            avgrNegativePeriodDeviation -= avgrPossitivePeriodDeviation / 100.0;
+            avgrNegativePeriodDeviation -= avgrNegativePeriodDeviation / 100.0;
             avgrNegativePeriodDeviation += -periodDeviation/100.0;
         }
 
