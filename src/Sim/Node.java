@@ -4,6 +4,7 @@ package Sim;
 // and it count messages send and received.
 
 public class Node extends SimEnt {
+
 	private NetworkAddr _id;
 	private SimEnt _peer;
 	private int _sentmsg=0;
@@ -14,7 +15,7 @@ public class Node extends SimEnt {
 	{
 		super();
 		_id = new NetworkAddr(network, node);
-	}	
+	}
 	
 	
 	// Sets the peer to communicate with. This node is single homed
@@ -67,7 +68,9 @@ public class Node extends SimEnt {
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
 				send(this, new TimerEvent(),_timeBetweenSending);
-                SimEngine.msgSent();
+				SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
+
+				// Presentation:
 				System.out.println("Node " + _id.networkId() + "."
 						+ _id.nodeId() + " sent message with seq: " + _seq + " at time " + SimEngine.getTime());
 				_seq++;
@@ -76,11 +79,16 @@ public class Node extends SimEnt {
 		if (ev instanceof Message)
 		{
 			double currTime = SimEngine.getTime();
+            double tt = currTime - ((Message) ev).timeSent;
+
+			calculateJitter(tt);
+
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
 					+ " receives message with seq: " + ((Message) ev).seq()
-					+ " at time " + SimEngine.getTime()
-					+ " It took " + (currTime-((Message) ev).timeSent) + " ms.");
-			SimEngine.msgRecv(currTime-((Message) ev).timeSent);
+					+ " at time " + currTime
+					+ " It took " + (tt) + " ms.");
+
+			SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received.
 		}
 	}
 }
