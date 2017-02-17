@@ -68,7 +68,7 @@ public class Node extends SimEnt {
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
 				send(this, new TimerEvent(),_timeBetweenSending);
-				SimEngine.msgSent();
+				SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
 
 				// Presentation:
 				System.out.println("Node " + _id.networkId() + "."
@@ -78,6 +78,7 @@ public class Node extends SimEnt {
 		}
 		if (ev instanceof Message)
 		{
+			SimEngine.msgRecv(); // Report to SimEngine that a message has been received.
 			double currTime = SimEngine.getTime();
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
 					+ " receives message with seq: " + ((Message) ev).seq()

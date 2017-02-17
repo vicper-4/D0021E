@@ -119,13 +119,13 @@ public final class SimEngine implements Runnable {
 
 		// Collect data
 		//jitter = Node.getJitter(); //TODO: Should reference the end node in a transaction?
-		double droprate = (int) (((double) (_sent - _recv) / (double) _sent) * 100);
+		int droprate = (int) (((double) (_sent - _recv) / (double) _sent) * 100);
 		double transitTime = totalTransit / _recv;
 
 		//Prints results at end or run. 
 		System.out.printf("%nResults %n");
 		System.out.printf("------- %n");
-		System.out.printf("Droprate: %.1f sent: %d, received: %d %n", droprate, _sent, _recv);
+		System.out.printf("Droprate: %d%% sent: %d, received: %d %n", droprate, _sent, _recv);
 		System.out.printf("Average transit time: %.4fms. %n", transitTime);
 		System.out.printf("Average jitter: %.4fms %n", jitter);
 		reset();
@@ -136,5 +136,12 @@ public final class SimEngine implements Runnable {
 	 */
 	public static void msgSent() {
 		_sent++;
+	}
+
+	/**
+	 * Called when a node sends a message
+	 */
+	public static void msgRecv() {
+		_recv++;
 	}
 }
