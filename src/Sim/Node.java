@@ -106,8 +106,5 @@ public class Node extends SimEnt {
         System.out.printf("Deviation from avrage period: %fms %n", sink.getPeriodDeviation());
         System.out.printf("Avrage period: %fms %n", sink.getAvgrPeriod());
         System.out.printf("%n");
-
-        //test
-        System.out.printf("My jitter: %.16fms %n", sink.getAvgrJitter());
     }
 }
