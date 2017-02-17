@@ -7,13 +7,63 @@ public class Sink
     private double avgrPeriod;
     private double period;
     private double periodDeviation;
-    private double avgrPeriodDeviation;
     private double avgrPossitivePeriodDeviation;
+    private double avgrPeriodDeviation;
     private double avgrNegativePeriodDeviation;
     private double avgrDelay;
     private double delay;
     private double avgrJitter;
     private double jitter;
+
+    public double getAvgrPeriod() {
+        return avgrPeriod;
+    }
+
+
+    public long getRecived() {
+        return recived;
+    }
+
+    public double getPeriod() {
+        return period;
+    }
+
+
+    public double getPeriodDeviation() {
+        return periodDeviation;
+    }
+
+
+    public double getAvgrPeriodDeviation() {
+        return avgrPeriodDeviation;
+    }
+
+
+    public double getAvgrPossitivePeriodDeviation() {
+        return avgrPossitivePeriodDeviation;
+    }
+
+
+    public double getAvgrNegativePeriodDeviation() {
+        return avgrNegativePeriodDeviation;
+    }
+
+    public double getAvgrDelay() {
+        return avgrDelay;
+    }
+
+    public double getDelay() {
+        return delay;
+    }
+
+    public double getAvgrJitter() {
+        return avgrJitter;
+    }
+
+    public double getJitter() {
+        return jitter;
+    }
+
 
     Sink()
     {
