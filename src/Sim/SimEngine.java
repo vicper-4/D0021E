@@ -141,7 +141,8 @@ public final class SimEngine implements Runnable {
 	/**
 	 * Called when a node sends a message
 	 */
-	public static void msgRecv() {
+	public static void msgRecv(double tt) {
+        totalTransit += tt;
 		_recv++;
 	}
 }

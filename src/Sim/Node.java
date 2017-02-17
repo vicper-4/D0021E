@@ -78,14 +78,15 @@ public class Node extends SimEnt {
 		}
 		if (ev instanceof Message)
 		{
-			SimEngine.msgRecv(); // Report to SimEngine that a message has been received.
 			double currTime = SimEngine.getTime();
+            double tt = currTime - ((Message) ev).timeSent;
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
 					+ " receives message with seq: " + ((Message) ev).seq()
 					+ " at time " + currTime
-					+ " It took " + (currTime-((Message) ev).timeSent) + " ms.");
+					+ " It took " + (tt) + " ms.");
 
-			calculateJitter(currTime - ((Message) ev).timeSent);
+			SimEngine.msgRecv(tt); // Report to SimEngine that a message has been received.
+			calculateJitter(tt);
 		}
 	}
 }
