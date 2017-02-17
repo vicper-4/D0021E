@@ -101,9 +101,9 @@ public class Sink
 
         //-------------------jitter-------------------
 
-        jitter = Math.abs(delay - tt);
-        avgrJitter -= avgrJitter/recived;
-        avgrJitter += jitter/recived;
+        //jitter = Math.abs(delay - tt);
+        //avgrJitter -= avgrJitter/recived;
+        //avgrJitter += jitter/recived;
 
         //-------------------delay-------------------
         
