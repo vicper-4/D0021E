@@ -105,6 +105,12 @@ public class Node extends SimEnt {
         System.out.printf("Time since last recived message: %fms %n", sink.getPeriod());
         System.out.printf("Deviation from avrage period: %fms %n", sink.getPeriodDeviation());
         System.out.printf("Avrage period: %fms %n", sink.getAvgrPeriod());
+        System.out.printf("Deviation from avrage period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
+        System.out.printf("Deviation from avrage period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
+        //System.out.printf("Delay: %fms %n", sink.getDelay());
+        //System.out.printf("Avrage delay: %fms %n", sink.getAvgrDelay());
+        //System.out.printf("Jitter: %fms %n", sink.getJitter());
+        //System.out.printf("Avrage jitter: %fms %n", sink.getAvgrJitter());
         System.out.printf("%n");
     }
 }
