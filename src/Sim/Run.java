@@ -10,11 +10,13 @@ public class Run {
 		Link link2 = new Link();
 		// Link link1 = new LossyLink(4.0f,0.2f,0.2f);
 		// Link link2 = new LossyLink(2.0f, 1.5f, 0.2f);
-		
+	
+        Sink sink1 = new Sink();
+        Sink sink2 = new Sink();
 		// Create two end hosts that will be
 		// communicating via the router
-		Node host1 = new Node(1,1);
-		Node host2 = new Node(2,1);
+		Node host1 = new Node(1,1, sink1);
+		Node host2 = new Node(2,1, sink2);
 
 		//Connect links to hosts
 		host1.setPeer(link1);
@@ -30,12 +32,12 @@ public class Run {
 		routeNode.connectInterface(1, link2, host2);
 
 		// Generate some traffic
-		Generator gen1 = new PoissonGenerator(5);
-		Generator gen2 = new PoissonGenerator(5);
+		Generator gen1 = new GaussianGenerator(7, 5);
+		Generator gen2 = new GaussianGenerator(7, 5);
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
-		host1.StartSending(2, 2, 10, gen1, 1); 
+		host1.StartSending(2, 2, 1000, gen1, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		host2.StartSending(1, 1, 10, gen2, 10);
+		//host2.StartSending(1, 1, 10, gen2, 10);
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
