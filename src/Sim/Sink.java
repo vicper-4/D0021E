@@ -77,6 +77,7 @@ public class Sink
         
         period = currTime - last;
         
+        if(avgrPeriod == 0) avgrPeriod = period;
         avgrPeriod -= avgrPeriod/recived;
         avgrPeriod += period/recived;
 
@@ -84,6 +85,7 @@ public class Sink
 
         periodDeviation = period - avgrPeriod;
 
+        if(avgrPeriodDeviation == 0) avgrPeriodDeviation = periodDeviation;
         avgrPeriodDeviation -= avgrPeriodDeviation/recived;
         avgrPeriodDeviation += Math.abs(periodDeviation)/recived;
         
@@ -101,9 +103,8 @@ public class Sink
 
         //-------------------jitter-------------------
 
-        //jitter = Math.abs(delay - tt);
-        //avgrJitter -= avgrJitter/recived;
-        //avgrJitter += jitter/recived;
+        jitter = Math.abs(delay - tt);
+		avgrJitter += (1.0 / ((double) recived)) * (Math.abs(tt - avgrDelay) - avgrJitter);
 
         //-------------------delay-------------------
         
