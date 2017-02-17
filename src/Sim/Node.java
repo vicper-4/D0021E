@@ -10,12 +10,14 @@ public class Node extends SimEnt {
 	private int _sentmsg=0;
 	private int _seq = 0;
 	private Generator gen;
+    private Sink sink;
 
 	
-	public Node (int network, int node)
+	public Node (int network, int node, Sink sink)
 	{
 		super();
 		_id = new NetworkAddr(network, node);
+        this.sink = sink;
 	}
 	
 	
@@ -84,14 +86,28 @@ public class Node extends SimEnt {
 			double currTime = SimEngine.getTime();
             double tt = currTime - ((Message) ev).timeSent;
 
+            sink.recv((Message)ev, currTime);
+
 			calculateJitter(tt);
 
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
 					+ " receives message with seq: " + ((Message) ev).seq()
 					+ " at time " + currTime
 					+ " It took " + (tt) + " ms.");
+            printStat();
 
 			SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received.
 		}
 	}
+
+    public void printStat()
+    {
+        System.out.printf("Time since last recived message: %fms %n", sink.getPeriod());
+        System.out.printf("Deviation from avrage period: %fms %n", sink.getPeriodDeviation());
+        System.out.printf("Avrage period: %fms %n", sink.getAvgrPeriod());
+        System.out.printf("%n");
+
+        //test
+        System.out.printf("My jitter: %.16fms %n", sink.getAvgrJitter());
+    }
 }
