@@ -23,11 +23,8 @@ public final class SimEngine implements Runnable {
 		SimEngine.jitter = jitter;
 	}
 
-
-
 	// This method is called to when scheduling an event for some target. Examples of events are messages,
 	// timer events etc.
-	
 	public EventHandle register(SimEnt registrator, SimEnt target, Event event, double delayedExecution)
 	{
 		double scheduleForTime = getTime() + delayedExecution;
@@ -42,7 +39,6 @@ public final class SimEngine implements Runnable {
 	}
 	
 	// To erase a scheduled event, this method can be used
-	
 	public void deregister (EventHandle handle) 
 	{
 	
@@ -51,7 +47,6 @@ public final class SimEngine implements Runnable {
 	
 	// To force a stop of the motor, even when events are still
 	// present in the event list. This method can be used
-	
 	public void stop()
 	{
 		_quit = true;
@@ -60,7 +55,6 @@ public final class SimEngine implements Runnable {
 	// To empty all events in the queue and restart the engine
 	// this method can be used. You however need to add a new 
 	// event directly otherwise the engine will stop due to no events 
-	
 	public void reset()
 	{
 		_simTimeTree.clear();
@@ -76,7 +70,6 @@ public final class SimEngine implements Runnable {
 	
 	// We can only have one engine in the simulator so this method
 	// sees to that. In other words we have implemented a singleton
-	
 	public static SimEngine instance() 
 	{
 		if (_instance==null) 
@@ -89,7 +82,6 @@ public final class SimEngine implements Runnable {
 	
 	// This is the motor itself, is fetches events from the event list as long as there 
 	// still are events present or until the stop method has been called
-	
 	public void run()
 	{	
 		EventHandle handleToNextEvent=null;
