@@ -19,7 +19,6 @@ public class Sink
         return avgrPeriod;
     }
 
-
     public long getRecived() {
         return recived;
     }
@@ -28,21 +27,17 @@ public class Sink
         return period;
     }
 
-
     public double getPeriodDeviation() {
         return periodDeviation;
     }
-
 
     public double getAvgrPeriodDeviation() {
         return avgrPeriodDeviation;
     }
 
-
     public double getAvgrPossitivePeriodDeviation() {
         return avgrPossitivePeriodDeviation;
     }
-
 
     public double getAvgrNegativePeriodDeviation() {
         return avgrNegativePeriodDeviation;
@@ -136,5 +131,4 @@ public class Sink
         avgrJitter = 0.0;
         jitter = 0.0;
     }
-    //TODO add get functions fall all variables
 }
