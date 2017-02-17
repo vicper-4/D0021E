@@ -23,7 +23,7 @@ public final class SimEngine implements Runnable {
 	private static double jitter = 0;       //jitter of the system
 
 	public static void setJitter(double jitter) {
-		SimEngine.jitter = jitter;
+		SimEngine.jitter += jitter;
 	}
 
 
