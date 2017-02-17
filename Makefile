@@ -10,8 +10,8 @@ PACKAGER 		:= jar
 PACFLAGS 		:= cfm
 PACMETA 		:= META-INF/
 MANIFEST 		:= $(PACMETA)MANIFEST.MF
-VERSION 		:= 1.0
-PACNAME 		:= Lab$(VERSSION).jar
+VERSION 		:= 1.1
+PACNAME 		:= Lab$(VERSION).jar
 
 filelist		:= $(SRCPATH)*.java
 main 			:= Sim.Run
