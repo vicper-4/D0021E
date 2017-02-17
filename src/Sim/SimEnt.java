@@ -66,6 +66,7 @@ public abstract class SimEnt {
 		jitter += (1.0 / ((double) _recv)) * (d - jitter);
 
 		System.out.println(":: Current average jitter: " + jitter + "ms");
+		SimEngine.setJitter(jitter);
 	}
 
 	public double getJitter() {
