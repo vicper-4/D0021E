@@ -21,7 +21,7 @@ public final class SimEngine implements Runnable {
 	private static double jitter = 0;       //jitter of the system
 
 	public static void setJitter(double jitter) {
-		SimEngine.jitter += jitter;
+		SimEngine.jitter = jitter;
 	}
 
 
@@ -105,14 +105,14 @@ public final class SimEngine implements Runnable {
 				nextEventToExecute = (SimTimeSlot) _simTimeTree.firstKey();
 				handleToNextEvent = (EventHandle) _simTimeTree.get(nextEventToExecute);
 				_simTime=nextEventToExecute._msek;
+				handleToNextEvent._event.entering(handleToNextEvent._target);
+				handleToNextEvent._target.recv(handleToNextEvent._registrator, handleToNextEvent._event);
 
 				// TODO: Brainfarts
 				// Calculate jitter
 				//jitter = handleToNextEvent._target.getJitter();
-				//System.out.println("\t -Simengine currjitter: " + jitter + "-");
+				//System.out.println("\t - Simengin currjitter: " + jitter + " -");
 
-				handleToNextEvent._event.entering(handleToNextEvent._target);
-				handleToNextEvent._target.recv(handleToNextEvent._registrator, handleToNextEvent._event);
 				deregister(handleToNextEvent);
 			}
 		} while (!_quit);
@@ -127,7 +127,7 @@ public final class SimEngine implements Runnable {
 		System.out.printf("------- %n");
 		System.out.printf("Droprate: %d%% sent: %d, received: %d %n", droprate, _sent, _recv);
 		System.out.printf("Average transit time: %.4fms. %n", transitTime);
-		System.out.printf("Average jitter: %.4fms %n", jitter);
+		System.out.printf("Average jitter: %fms %n", jitter);
 		reset();
 	}
 
@@ -141,8 +141,11 @@ public final class SimEngine implements Runnable {
 	/**
 	 * Called when a node sends a message
 	 */
-	public static void msgRecv(double tt) {
+	public static void msgRecv(double tt, double jitter) {
         totalTransit += tt;
 		_recv++;
+
+		System.out.println(":: Current average jitter: " + jitter + " ms.");
+		setJitter(jitter);
 	}
 }
