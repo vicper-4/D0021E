@@ -13,8 +13,7 @@ public final class SimEngine implements Runnable {
 	private boolean _quit = false;
 	private static double _simTime = 0;
 
-	// Stuffs
-	private static int[] jitters;           //TODO: Should be a linked list with jitters for every node?
+	// global statistics
 	private static int _sent = 0;           //messages sent from nodes
 	private static int _recv = 0;           //messages received by nodes
 	private static double totalTransit = 0; //sum of transit times of all packages.
@@ -108,10 +107,7 @@ public final class SimEngine implements Runnable {
 				handleToNextEvent._event.entering(handleToNextEvent._target);
 				handleToNextEvent._target.recv(handleToNextEvent._registrator, handleToNextEvent._event);
 
-				// TODO: Brainfarts
-				// Calculate jitter
-				//jitter = handleToNextEvent._target.getJitter();
-				//System.out.println("\t - Simengin currjitter: " + jitter + " -");
+				// TODO check if node and then check jitter
 
 				deregister(handleToNextEvent);
 			}
