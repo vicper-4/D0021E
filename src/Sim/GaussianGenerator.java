@@ -1,6 +1,5 @@
 package Sim;
 
-//TODO figure out why this gives both too big and too small values.
 public class GaussianGenerator extends Generator
 {
 	private double mean;
