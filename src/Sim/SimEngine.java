@@ -14,12 +14,20 @@ public final class SimEngine implements Runnable {
 	private final TreeMap _simTimeTree = new TreeMap();
 	private boolean _quit = false;
 	private static double _simTime = 0;
+
+	// Stuffs
+	private static int[] jitters;           //TODO: Should be a linked list with jitters for every node?
 	private static int _sent = 0;           //messages sent from nodes
 	private static int _recv = 0;           //messages received by nodes
 	private static double totalTransit = 0; //sum of transit times of all packages.
 	private static double jitter = 0;       //jitter of the system
-	
-	
+
+	public static void setJitter(double jitter) {
+		SimEngine.jitter = jitter;
+	}
+
+
+
 	// This method is called to when scheduling an event for some target. Examples of events are messages,
 	// timer events etc.
 	
@@ -100,9 +108,10 @@ public final class SimEngine implements Runnable {
 				handleToNextEvent = (EventHandle) _simTimeTree.get(nextEventToExecute);
 				_simTime=nextEventToExecute._msek;
 
+				// TODO: Brainfarts
 				// Calculate jitter
-				jitter = handleToNextEvent._target.getJitter();
-				System.out.println("\t -Simengine currjitter: " + jitter + "-");
+				//jitter = handleToNextEvent._target.getJitter();
+				//System.out.println("\t -Simengine currjitter: " + jitter + "-");
 
 				handleToNextEvent._event.entering(handleToNextEvent._target);
 				handleToNextEvent._target.recv(handleToNextEvent._registrator, handleToNextEvent._event);
@@ -111,14 +120,16 @@ public final class SimEngine implements Runnable {
 		} while (!_quit);
 
 		// Collect data
-		//jitter = Node.getJitter(); //TODO: Should reference the end node in a transaction.
+		//jitter = Node.getJitter(); //TODO: Should reference the end node in a transaction?
+		double droprate = (int) (((double) (_sent - _recv) / (double) _sent) * 100);
+		double transitTime = totalTransit / _recv;
 
 		//Prints results at end or run. 
-		System.out.println("\nResults");
-		System.out.println("-------");
-		System.out.println("Droprate: " + (int) (((double) (_sent - _recv) / (double) _sent) * 100) + "% sent: " + _sent + ", received: " + _recv);
-		System.out.println("Average transit time: " + totalTransit / _recv + "ms");
-		System.out.println("Average jitter: " + jitter + "ms");
+		System.out.printf("%nResults %n");
+		System.out.printf("------- %n");
+		System.out.printf("Droprate: %.1f sent: %d, received: %d %n", droprate, _sent, _recv);
+		System.out.printf("Average transit time: %.4fms. %n", transitTime);
+		System.out.printf("Average jitter: %.4fms %n", jitter);
 		reset();
 	}
 
