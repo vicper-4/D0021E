@@ -9,6 +9,7 @@ public class Node extends SimEnt {
 	private SimEnt _peer;
 	private int _sentmsg=0;
 	private int _seq = 0;
+	private Generator gen;
 
 	
 	public Node (int network, int node)
@@ -45,10 +46,10 @@ public class Node extends SimEnt {
 	private int _toNetwork = 0;
 	private int _toHost = 0;
 
-	public void StartSending(int network, int node, int number, int timeInterval, int startSeq)
+	public void StartSending(int network, int node, int number, Generator gen, int startSeq)
 	{
 		_stopSendingAfter = number;
-		_timeBetweenSending = timeInterval;
+		this.gen = gen;
 		_toNetwork = network;
 		_toHost = node;
 		_seq = startSeq;
@@ -66,7 +67,9 @@ public class Node extends SimEnt {
 			if (_stopSendingAfter > _sentmsg)
 			{
 				_sentmsg++;
-				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
+				send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
+															 _toHost),
+										_seq), gen.nextSend());
 				send(this, new TimerEvent(),_timeBetweenSending);
 				SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
 
