@@ -90,10 +90,12 @@ public class Node extends SimEnt {
 
 			calculateJitter(tt);
 
-			System.out.println("Node " + _id.networkId() + "." + _id.nodeId()
-					+ " receives message with seq: " + ((Message) ev).seq()
-					+ " at time " + currTime
-					+ " It took " + (tt) + " ms.");
+			System.out.printf("Node %d.%d receives message with seq: %d at time %f. Transport time was: %f ms %n",
+					_id.networkId(),
+					_id.nodeId(),
+					((Message) ev).seq(),
+					currTime,
+					tt);
             printStat();
 
 			SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received.
