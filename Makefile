@@ -32,6 +32,6 @@ clean:
 	rm -f $(CLASSPATH)*.class
 
 package:
-	jar $(PACFLAGS) $(PACNAME) $(MANIFEST) -C $(BIN) $(PAK)
+	jar $(PACFLAGS) $(BIN)$(PACNAME) $(MANIFEST) -C $(BIN) $(PAK)
 
 build: install package clean

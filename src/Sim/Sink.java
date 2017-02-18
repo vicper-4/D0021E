@@ -1,5 +1,8 @@
 package Sim;
 
+/**
+ * Class for receving/consuming network trafic
+ */
 public class Sink
 {
     private long recived;
@@ -59,30 +62,64 @@ public class Sink
         return jitter;
     }
 
-
     Sink()
     {
         reset();
     }
 
+    /**
+     * handles reciving of messages/trafic.
+     * @param ev        Incomming message/trafic
+     * @param currTime  Current time.
+     */
     public void recv(Message ev, double currTime)
     {
-        double tt = currTime - ev.timeSent;
+        calcStat(currTime - ev.timeSent, currTime);
         
-        //-------------------messages recived-------------------
+        last = currTime;
+    }
 
-        recived++;
-        
-        //-------------------period-------------------
-        
+    /**
+     * Calls the other methods that calculate statistics.
+     * @param tt        Transit time of the recived package.
+     * @param currTime  Current time.
+     */
+    private void calcStat(double tt, double currTime) {
+        recived(1);
+        period(currTime);
+        deviation();
+        delay(tt);
+        jitter(tt);
+    }
+
+    /**
+     * Increments the number of recived packages.
+     * @param n Number to increment by.
+     */
+    private void recived(long n) {
+        recived += n;
+    }
+
+    /**
+     * calculated period of the message and updates the avrage period.
+     * @param currTime  Current time.
+     */
+    private void period(double currTime) {
         period = currTime - last;
         
+        if(avgrPeriod == 0) {avgrPeriod = period;}
+
         avgrPeriod -= avgrPeriod/recived;
         avgrPeriod += period/recived;
+    }
 
-        //-------------------period deviation-------------------
-
+    /**
+     * calculated deviation in period of the message and updates the avrage period deviation.
+     */
+    private void deviation() {
         periodDeviation = period - avgrPeriod;
+
+        if(avgrPeriodDeviation == 0) {avgrPeriodDeviation = periodDeviation;}
 
         avgrPeriodDeviation -= avgrPeriodDeviation/recived;
         avgrPeriodDeviation += Math.abs(periodDeviation)/recived;
@@ -98,24 +135,30 @@ public class Sink
             avgrNegativePeriodDeviation -= avgrNegativePeriodDeviation / 100.0;
             avgrNegativePeriodDeviation += -periodDeviation/100.0;
         }
+    }
 
-        //-------------------jitter-------------------
+    /**
+     * calculated jitter of the message and updates the avrage jitter.
+     * @param tt  Transit time.
+     */
+    private void jitter(double tt) {
+        jitter = Math.abs(delay - tt);
+		avgrJitter += (1.0 / ((double) recived)) * (Math.abs(tt - avgrDelay) - avgrJitter);
+    }
 
-        //jitter = Math.abs(delay - tt);
-        //avgrJitter -= avgrJitter/recived;
-        //avgrJitter += jitter/recived;
-
-        //-------------------delay-------------------
-        
+    /**
+     * calculated period of the message and updates the avrage period.
+     * @param tt  Transit time.
+     */
+    private void delay(double tt) {
         delay = tt;
         avgrDelay -= avgrDelay/recived;
         avgrDelay += delay/recived;
-
-        //-------------------last recived-------------------
-        
-        last = currTime;
     }
 
+    /**
+     * Resets all gatherd statistics.
+     */
     private void reset()
     {
         recived = 0;

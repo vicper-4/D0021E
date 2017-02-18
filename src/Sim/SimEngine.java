@@ -133,7 +133,6 @@ public final class SimEngine implements Runnable {
         totalTransit += tt;
 		_recv++;
 
-		System.out.println(":: Current average jitter: " + jitter + " ms.");
 		setJitter(jitter);
 	}
 }

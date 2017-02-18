@@ -72,7 +72,7 @@ public class Node extends SimEnt {
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
 															 _toHost),
 										_seq), 0);
-				send(this, new TimerEvent(),gen.nextSend());
+				send(this, new TimerEvent(),gen.delay());
 				SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
 
 				// Presentation:
@@ -107,9 +107,12 @@ public class Node extends SimEnt {
         System.out.printf("Time since last recived message: %fms %n", sink.getPeriod());
         System.out.printf("Deviation from avrage period: %fms %n", sink.getPeriodDeviation());
         System.out.printf("Avrage period: %fms %n", sink.getAvgrPeriod());
+        System.out.printf("Deviation from avrage period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
+        System.out.printf("Deviation from avrage period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
+        //System.out.printf("Delay: %fms %n", sink.getDelay());
+        //System.out.printf("Avrage delay: %fms %n", sink.getAvgrDelay());
+        //System.out.printf("Jitter: %fms %n", sink.getJitter());
+        //System.out.printf("Avrage jitter: %fms %n", sink.getAvgrJitter());
         System.out.printf("%n");
-
-        //test
-        System.out.printf("My jitter: %.16fms %n", sink.getAvgrJitter());
     }
 }
