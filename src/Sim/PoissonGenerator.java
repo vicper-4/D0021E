@@ -13,7 +13,7 @@ public class PoissonGenerator extends Generator
 		this.lambda = Math.exp(-mean);
 	}
 
-    //TODO Only returns whole ms. give more granularity
+    //TODO Only returns whole ms. consider making it more granular
 	/**
 	 * @return 	Psudo-random microsecond on Poisson distrubution. 
 	 */
