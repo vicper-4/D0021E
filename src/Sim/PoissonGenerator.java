@@ -1,7 +1,7 @@
 package Sim;
 
 /**
- * Generator for Poisson distridution.
+ * Network trafic enerator for Poisson distridution.
  */
 public class PoissonGenerator extends Generator
 {

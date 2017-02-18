@@ -1,5 +1,8 @@
 package Sim;
 
+/**
+ * Network trafic generator for constant bit-rates.
+ */
 public class ConstantGenerator extends Generator
 {
 	private double period;
@@ -10,6 +13,9 @@ public class ConstantGenerator extends Generator
 		this.period = period;
 	}
 
+    /**
+     * @return Value specified in constructor.
+     */
 	public double nextSend()
 	{
 		return period;
