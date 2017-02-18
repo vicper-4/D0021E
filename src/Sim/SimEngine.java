@@ -98,15 +98,11 @@ public final class SimEngine implements Runnable {
 				_simTime=nextEventToExecute._msek;
 				handleToNextEvent._event.entering(handleToNextEvent._target);
 				handleToNextEvent._target.recv(handleToNextEvent._registrator, handleToNextEvent._event);
-
-				// TODO check if node and then check jitter
-
 				deregister(handleToNextEvent);
 			}
 		} while (!_quit);
 
 		// Collect data
-		//jitter = Node.getJitter(); //TODO: Should reference the end node in a transaction?
 		int droprate = (int) (((double) (_sent - _recv) / (double) _sent) * 100);
 		double transitTime = totalTransit / _recv;
 
