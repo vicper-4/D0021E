@@ -1,12 +1,16 @@
 package Sim;
 
 /**
- * Network trafic enerator for Poisson distridution.
+ * Network trafic enerator for Poisson distridution as described in the link
+ * @see <a href="https://en.wikipedia.org/wiki/Poisson_distribution#Generating_Poisson-distributed_random_variables">Generating Poisson-distributed random variables</a>
  */
 public class PoissonGenerator extends Generator
 {
 	private double lambda;
 
+    /**
+     * @param mean some magic value that makes this do what it is supposed to. 
+     */
 	PoissonGenerator(double mean)
 	{
 		super();

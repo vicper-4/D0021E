@@ -8,6 +8,10 @@ public class GaussianGenerator extends Generator
 	private double mean;
 	private double deviation;
 
+    /**
+     * @param mean      average output
+     * @param deviation deviation modifier
+     */
 	GaussianGenerator(double mean, double deviation)
 	{
 		super();

@@ -6,7 +6,10 @@ package Sim;
 public class ConstantGenerator extends Generator
 {
 	private double period;
-	
+
+    /**
+     * @param period Time between sent packages.
+     */
 	ConstantGenerator(double period)
 	{
 		super();
