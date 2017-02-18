@@ -35,7 +35,7 @@ public abstract class SimEnt {
 	{
         if(delayExecution < 0.0) delayExecution = 0.0;
 		// this object is the registrator/source submitting the event
-		// TODO: Should check that it doesnt send a message in negative time and otherwise throw an exception
+		// TODO: Should check that it doesnt send a message in negative time and otherwise set delayExecution to 0
 		return SimEngine.instance().register(this, destination, event, delayExecution);
 	}
 	
@@ -53,7 +53,7 @@ public abstract class SimEnt {
 	public abstract void recv(SimEnt source, Event event);
 
 	/**
-	 * Called when a node recives a message
+	 * Called when a node receives a message
 	 *
 	 * @param tt The transit time of the message
 	 */
