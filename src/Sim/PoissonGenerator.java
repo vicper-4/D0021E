@@ -1,7 +1,7 @@
 package Sim;
 
 /**
- * Generator for Poisson distridution.
+ * Generator for Poisson distribution.
  */
 public class PoissonGenerator extends Generator
 {
@@ -15,7 +15,7 @@ public class PoissonGenerator extends Generator
 
     //TODO Only returns whole ms. give more granularity
 	/**
-	 * @return 	Psudo-random microsecond on Poisson distrubution. 
+	 * @return 	Pseudo-random microsecond on Poisson distribution.
 	 */
 	public double nextSend()
 	{
