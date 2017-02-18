@@ -10,7 +10,7 @@ PACKAGER 		:= jar
 PACFLAGS 		:= cfm
 PACMETA 		:= META-INF/
 MANIFEST 		:= $(PACMETA)MANIFEST.MF
-VERSION 		:= 1.1
+VERSION 		:= 2.0
 PACNAME 		:= Lab$(VERSION).jar
 
 filelist		:= $(SRCPATH)*.java
