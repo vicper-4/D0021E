@@ -96,7 +96,6 @@ public class Node extends SimEnt {
 					((Message) ev).seq(),
 					currTime,
 					tt);
-            printStat();
 
 			SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received.
 		}
@@ -104,15 +103,14 @@ public class Node extends SimEnt {
 
     public void printStat()
     {
-        System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
-        System.out.printf("Deviation from average period: %fms %n", sink.getPeriodDeviation());
+        //System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
+        //System.out.printf("Deviation from average period: %fms %n", sink.getPeriodDeviation());
         System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
         System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
         System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
         //System.out.printf("Delay: %fms %n", sink.getDelay());
-        //System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
+        System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
         //System.out.printf("Jitter: %fms %n", sink.getJitter());
-        //System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
-        System.out.println();
+        System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
     }
 }

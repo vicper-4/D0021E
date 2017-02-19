@@ -1,7 +1,7 @@
 package Sim;
 
 /**
- * Network trafic enerator for Poisson distridution as described in the link
+ * Network traffic generator for Poisson distribution as described in the link
  * @see <a href="https://en.wikipedia.org/wiki/Poisson_distribution#Generating_Poisson-distributed_random_variables">Generating Poisson-distributed random variables</a>
  */
 public class PoissonGenerator extends Generator
@@ -9,7 +9,7 @@ public class PoissonGenerator extends Generator
 	private double lambda;
 
     /**
-     * @param mean some magic value that makes this do what it is supposed to. 
+     * @param mean some magic value that makes this do what it is supposed to.
      */
 	PoissonGenerator(double mean)
 	{
@@ -19,7 +19,7 @@ public class PoissonGenerator extends Generator
 
     //TODO Only returns whole ms. consider making it more granular
 	/**
-	 * @return 	Psudo-random microsecond on Poisson distrubution. 
+	 * @return 	Pseudo-random microsecond on Poisson distribution.
 	 */
 	public double nextSend()
 	{

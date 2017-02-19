@@ -88,8 +88,8 @@ public class Sink
         received(1);
         period(currTime);
         deviation();
-        delay(tt);
         jitter(tt);
+        delay(tt);
     }
 
     /**
