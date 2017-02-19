@@ -7,9 +7,9 @@ public class Run {
 	{
  		//Creates two links
 		Link link1 = new Link();
-		Link link2 = new Link();
+		//Link link2 = new Link();
 		// Link link1 = new LossyLink(4.0f,0.2f,0.2f);
-		// Link link2 = new LossyLink(2.0f, 1.5f, 0.2f);
+		Link link2 = new LossyLink(2.0f, 2.0f, 0.2f);
 	
         Sink sink1 = new Sink();
         Sink sink2 = new Sink();
@@ -32,12 +32,13 @@ public class Run {
 		routeNode.connectInterface(1, link2, host2);
 
 		// Generate some traffic
-		Generator gen1 = new GaussianGenerator(7, 5);
-		Generator gen2 = new GaussianGenerator(7, 5);
-		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
-		host1.StartSending(2, 2, 1000, gen1, 1); 
-		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		//host2.StartSending(1, 1, 10, gen2, 10);
+		Generator gen1 = new ConstantGenerator(1);
+		Generator gen2 = new GaussianGenerator(5, 1);
+		Generator gen3 = new PoissonGenerator(4);
+		// host1 will send 500 messages with time interval 5 to network 2, node 1. Sequence starts with number 1000
+		host1.StartSending(2, 2, 500, gen1, 1000); 
+		// host2 will send 100 messages with time interval 10 to network 1, node 1. Sequence starts with number 2000
+		host2.StartSending(1, 1, 1000, gen2, 2000);
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
@@ -46,6 +47,11 @@ public class Run {
 		try
 		{
 			t.join();
+
+            System.out.println("\nHost 1.1\n-------");
+            host1.printStat();
+            System.out.println("Host 2.1\n-------");
+            host2.printStat();
 		}
 		catch (Exception e)
 		{
