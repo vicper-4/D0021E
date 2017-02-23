@@ -32,7 +32,19 @@ public class Node extends SimEnt {
 			 ((Link) _peer).setConnector(this);
 		}
 	}
-	
+
+    /**
+     * Disconnects the link.
+     */
+	public void setPeer (SimEnt peer)
+	{
+		_peer = peer;
+		
+		if(_peer instanceof Link )
+		{
+			 ((Link) _peer).unsetConnector(this);
+		}
+	}
 	
 	public NetworkAddr getAddr()
 	{
