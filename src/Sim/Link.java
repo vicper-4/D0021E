@@ -25,6 +25,17 @@ public class Link extends SimEnt{
 			_connectorB=connectTo;
 	}
 
+    /**
+     * Disconnects the link from a connected simulation entity.
+     */
+	public void unsetConnector(SimEnt disconnectFrom)
+	{
+		if (_connectorA == disconnectFrom) 
+			_connectorA=null;
+		else if (_connectorB == disconnectFrom)
+			_connectorB=null;
+	}
+
 	// Called when a message enters the link
 	
 	public void recv(SimEnt src, Event ev)
