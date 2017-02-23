@@ -46,10 +46,8 @@ public class Node extends SimEnt {
     /**
      * Disconnects the link.
      */
-	public void ussetPeer (SimEnt peer)
+	public void unsetPeer ()
 	{
-		_peer = peer;
-		
 		if(_peer instanceof Link )
 		{
 			 ((Link) _peer).unsetConnector(this);
@@ -135,7 +133,6 @@ public class Node extends SimEnt {
 				System.out.printf("Link received message to deprecated address,"
 						+" new address sent to sender %n");
 			}
-
 		}
 	}
 
