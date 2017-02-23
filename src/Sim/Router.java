@@ -22,9 +22,7 @@ public class Router extends SimEnt{
 	public void connectInterface(int interfaceNumber, SimEnt link, SimEnt node)
 	{
 		if (interfaceNumber<_interfaces)
-		{
 			_routingTable[interfaceNumber] = new RouteTableEntry(link, node);
-		}
 		else
 			System.out.println("Trying to connect to port not in router");
 		
@@ -48,7 +46,6 @@ public class Router extends SimEnt{
 			}
 		return routerInterface;
 	}
-	
 	
 	// When messages are received at the router this method is called
 	
