@@ -30,6 +30,6 @@ public class PoissonGenerator extends Generator
 			p *= rand.nextDouble();
 		}
 
-		return ((double)k);
+		return ((double)(k-1));
 	}
 }
