@@ -36,7 +36,7 @@ public class Node extends SimEnt {
     /**
      * Disconnects the link.
      */
-	public void setPeer (SimEnt peer)
+	public void ussetPeer (SimEnt peer)
 	{
 		_peer = peer;
 		
