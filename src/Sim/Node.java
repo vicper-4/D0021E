@@ -20,14 +20,14 @@ public class Node extends SimEnt {
 	private int _sentmsg=0;
 	private int _seq = 0;
 	private Generator gen;
-    private Sink sink;
+	private Sink sink;
 
 
 	public Node (int network, int node, Sink sink)
 	{
 		super();
 		_id = new NetworkAddr(network, node);
-        this.sink = sink;
+		this.sink = sink;
 	}
 	
 	
@@ -43,9 +43,9 @@ public class Node extends SimEnt {
 		}
 	}
 
-    /**
-     * Disconnects the link.
-     */
+	/**
+	 * Disconnects the link.
+	 */
 	public void unsetPeer ()
 	{
 		if(_peer instanceof Link )
@@ -112,10 +112,10 @@ public class Node extends SimEnt {
 
 			// Make calculations
 			double currTime = SimEngine.getTime();
-            double tt = currTime - ((Message) ev).timeSent;
+			double tt = currTime - ((Message) ev).timeSent;
 			calculateJitter(tt);
 
-            sink.recv((Message)ev, currTime);   // Pass message to sink
+			sink.recv((Message)ev, currTime);   // Pass message to sink
 			SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received.
 
 			System.out.printf("Node %d.%d receives message with seq: %d"
@@ -142,43 +142,43 @@ public class Node extends SimEnt {
 		}
 	}
 
-    public void printStat()
-    {
-        //System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
-        //System.out.printf("Deviation from average period: %fms %n", sink.getPeriodDeviation());
-        System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
-        System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
-        System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
-        //System.out.printf("Delay: %fms %n", sink.getDelay());
-        System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
-        //System.out.printf("Jitter: %fms %n", sink.getJitter());
-        System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
-    }
+	public void printStat()
+	{
+		//System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
+		//System.out.printf("Deviation from average period: %fms %n", sink.getPeriodDeviation());
+		System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
+		System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
+		System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
+		//System.out.printf("Delay: %fms %n", sink.getDelay());
+		System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
+		//System.out.printf("Jitter: %fms %n", sink.getJitter());
+		System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
+	}
 
 	/**
 	 * Sends a Bind Update to last sender to update its record of the network address of this node.
 	 * @param sender the record to be updated
 	 */
 	private void bindUpdate(NetworkAddr sender)
-    {
-    	_toNetwork = sender.networkId();
-    	_toHost = sender.nodeId();
+	{
+		_toNetwork = sender.networkId();
+		_toHost = sender.nodeId();
 
-    	//generate a new message to the sender
-	    send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
+		//generate a new message to the sender
+		send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
 															 _toHost),
 										0), 0);
-    }
+	}
 
 	/**
 	 * Update this nodes record of another nodes network address
 	 * @param newAddr the new address of remote node
 	 */
 	private void bindAck(NetworkAddr newAddr)
-    {
-    	// if real BindAck it would also send an ack to the mobile node
-	    System.out.println("bindAck on " + _id.networkId() + "." + _id.nodeId());
-	    _toNetwork = newAddr.networkId();
-	    _toHost = newAddr.nodeId();
-    }
+	{
+		// if real BindAck it would also send an ack to the mobile node
+		System.out.println("bindAck on " + _id.networkId() + "." + _id.nodeId());
+		_toNetwork = newAddr.networkId();
+		_toHost = newAddr.nodeId();
+	}
 }

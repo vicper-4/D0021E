@@ -11,8 +11,8 @@ public class Run {
 		// Link link1 = new LossyLink(4.0f,0.2f,0.2f);
 		//Link link2 = new LossyLink(2.0f, 2.0f, 0.2f);
 	
-        Sink sink1 = new Sink();
-        Sink sink2 = new Sink();
+		Sink sink1 = new Sink();
+		Sink sink2 = new Sink();
 		// Create two end hosts that will be
 		// communicating via the router
 		Node host1 = new Node(1,1, sink1);
@@ -40,7 +40,7 @@ public class Run {
 		// host2 will send 100 messages with time interval 10 to network 1, node 1. Sequence starts with number 2000
 		//host2.StartSending(1, 1, 4, gen1, 2000);
 
-        MoveEnt moveEvent = new MoveEnt((new NetworkAddr(3, 1)), 3);
+		MoveEnt moveEvent = new MoveEnt((new NetworkAddr(3, 1)), 3);
 
 		host1.send(link1, moveEvent, 4);
 		
@@ -52,10 +52,10 @@ public class Run {
 		{
 			t.join();
 
-            System.out.println("\nHost 1.1\n-------");
-            host1.printStat();
-            System.out.println("Host 2.1\n-------");
-            host2.printStat();
+			System.out.println("\nHost 1.1\n-------");
+			host1.printStat();
+			System.out.println("Host 2.1\n-------");
+			host2.printStat();
 		}
 		catch (Exception e)
 		{

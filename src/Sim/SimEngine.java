@@ -14,10 +14,10 @@ public final class SimEngine implements Runnable {
 	private static double _simTime = 0;
 
 	// global statistics
-	private static int _sent = 0;           //messages sent from nodes
-	private static int _recv = 0;           //messages received by nodes
+	private static int _sent = 0;		   //messages sent from nodes
+	private static int _recv = 0;		   //messages received by nodes
 	private static double totalTransit = 0; //sum of transit times of all packages.
-	private static double jitter = 0;       //jitter of the system
+	private static double jitter = 0;	   //jitter of the system
 
 	public static void setJitter(double jitter) {
 		SimEngine.jitter = jitter;
@@ -126,7 +126,7 @@ public final class SimEngine implements Runnable {
 	 * Called when a node sends a message
 	 */
 	public static void msgRecv(double tt, double jitter) {
-        totalTransit += tt;
+		totalTransit += tt;
 		_recv++;
 
 		setJitter(jitter);

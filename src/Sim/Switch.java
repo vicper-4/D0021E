@@ -16,7 +16,7 @@ public class Switch extends SimEnt{
 	}
 	
 	// This method connects links to the switch and also informs the 
-    // switch of the host connects to the other end of the link
+	// switch of the host connects to the other end of the link
 	
 	public void connectPort(int portNumber, SimEnt link, SimEnt node)
 	{
@@ -30,7 +30,7 @@ public class Switch extends SimEnt{
 		((Link) link).setConnector(this);
 	}
 
-    /**
+	/**
 	* This method disconnects links from the switch and also removes switch
 	* table information about what is connected to the other end of that link
 	*/
