@@ -126,12 +126,13 @@ public class Node extends SimEnt {
 
 			// If message received was sent to deprecated address,
 			// give sender my current address.
-			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
-					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId()))
-			{
-				bindUpdate( ((Message) ev).source() );
-				System.out.printf("Link received message to deprecated address,"
-						+" new address sent to sender %n");
+			if (_deprecated_id != null) {
+				if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
+						&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
+					bindUpdate(((Message) ev).source());
+					System.out.printf("Link received message to deprecated address,"
+							+ " new address sent to sender %n");
+				}
 			}
 		}
 	}
