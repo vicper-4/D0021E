@@ -9,7 +9,7 @@ public class MoveEnt implements Event{
 	private NetworkAddr _newNetwork;
 	private int _routerInterface;
 	
-	MoveEnt (SimEnt _link, NetworkAddr newNetwork, int routerInterface)
+	MoveEnt (NetworkAddr newNetwork, int routerInterface)
 	{
 		this._link = _link;
 		this._newNetwork = newNetwork;
@@ -21,9 +21,9 @@ public class MoveEnt implements Event{
 		return _link;
 	}
 
-	public int networkId()
+	public NetworkAddr networkId()
 	{
-		return _newNetwork.networkId();
+		return _newNetwork;
 	}
 
 	public int getInterface()
