@@ -59,6 +59,11 @@ public class Node extends SimEnt {
 		return _id;
 	}
 	
+	public NetworkAddr getDepr()
+	{
+		return _deprecated_id;
+	}
+	
 //**********************************************************************************	
 	// Just implemented to generate some traffic for demo.
 	// In one of the labs you will create some traffic generators
