@@ -29,7 +29,7 @@ public class Router extends SimEnt{
 		((Link) link).setConnector(this);
 	}
 
-    /**
+	/**
 	* This method disconnects links from the router and also removes router
 	* information about what is connected to the other end of that link
 	*/
@@ -53,11 +53,19 @@ public class Router extends SimEnt{
 	
 	private SimEnt getInterface(int networkAddress)
 	{
+		boolean pref, depr;
 		SimEnt routerInterface=null;
 		for(int i=0; i<_interfaces; i++)
 			if (_routingTable[i] != null)
 			{
-				if (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress)
+				pref = (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress);
+				
+				if (((Node) _routingTable[i].node()).getDepr() != null)
+					depr = (((Node) _routingTable[i].node()).getDepr().networkId() == networkAddress);
+				else
+					depr = false;
+				
+				if ( pref || depr)
 				{
 					routerInterface = _routingTable[i].link();
 				}
@@ -73,9 +81,12 @@ public class Router extends SimEnt{
 		{
 			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
 			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
-			System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());		
-			send (sendNext, event, _now);
-	
-		}	
+
+			if(sendNext != null)
+			{
+				send (sendNext, event, _now);
+				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());
+			}
+		}
 	}
 }
