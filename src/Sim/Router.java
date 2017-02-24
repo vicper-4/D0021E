@@ -33,14 +33,18 @@ public class Router extends SimEnt{
 	* This method disconnects links from the router and also removes router
 	* information about what is connected to the other end of that link
 	*/
-	public void disconnectInterface(int interfaceNumber, SimEnt link)
+	public void disconnectInterface(SimEnt link)
 	{
-		if (interfaceNumber<_interfaces)
-			_routingTable[interfaceNumber] = null;
-		else
-			System.out.println("Trying to disconnect fromto port not in router");
-		
-		((Link) link).unsetConnector(this);
+		for(int i=0; i<_interfaces; i++)
+			if (_routingTable[i] != null)
+			{
+				if (link == _routingTable[i].link())
+				{
+					_routingTable[interfaceNumber] = null;
+				}
+			}
+
+		System.out.println("Trying to disconnect fromto port not in router");
 	}
 
 	// This method searches for an entry in the routing table that matches

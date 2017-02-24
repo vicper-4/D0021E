@@ -52,5 +52,28 @@ public class Link extends SimEnt{
 				send(_connectorA, ev, _now);
 			}
 		}
+		if (ev instanceof MoveEnt)
+		{
+			SimEnt router = null;
+			SimEnt node = null;
+			
+			System.out.println("Link recv move request");
+			
+			if (_connectorA instanceof Router)
+			{
+				router = _connectorB;
+				_connectorB = null;
+				node = _connectorA;
+			}
+			else
+			{
+				router = _connectorA;
+				_connectorA = null;
+				node = _connectorB;
+			}
+
+			((Router)router).disconnectInterface(this);
+			((Router)router).connectInterface(((MoveEnt)ev).interface(), this, node);
+		}
 	}	
 }

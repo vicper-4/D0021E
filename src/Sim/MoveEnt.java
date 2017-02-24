@@ -7,11 +7,13 @@ package Sim;
 public class MoveEnt implements Event{
 	private SimEnt _link;
 	private NetworkAddr _newNetwork;
+	private int _routerInterface;
 	
-	MoveEnt (SimEnt _link, NetworkAddr newNetwork)
+	MoveEnt (SimEnt _link, NetworkAddr newNetwork, int routerInterface)
 	{
 		this._link = _link;
 		this._newNetwork = newNetwork;
+		this._routerInterface = routerInterface;
 	}
 
 	public SimEnt link()
@@ -22,6 +24,11 @@ public class MoveEnt implements Event{
 	public int networkId()
 	{
 		return _newNetwork.networkId();
+	}
+
+	public int interface()
+	{
+		return _routerInterface;
 	}
 	
 	public void entering(SimEnt locale)
