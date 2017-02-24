@@ -52,6 +52,7 @@ public class Link extends SimEnt{
 				send(_connectorA, ev, _now);
 			}
 		}
+
 		if (ev instanceof MoveEnt)
 		{
 			SimEnt router = null;
@@ -72,8 +73,8 @@ public class Link extends SimEnt{
 				node = _connectorB;
 			}
 
-			((Router)router).disconnectInterface(this);
-			((Router)router).connectInterface(((MoveEnt)ev).interface(), this, node);
+			((Router)router).disconnectInterface((SimEnt)this);
+			((Router)router).connectInterface(((MoveEnt)ev).getInterface(), this, node);
 		}
 	}	
 }

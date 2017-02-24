@@ -26,7 +26,7 @@ public class MoveEnt implements Event{
 		return _newNetwork.networkId();
 	}
 
-	public int interface()
+	public int getInterface()
 	{
 		return _routerInterface;
 	}

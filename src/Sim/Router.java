@@ -40,7 +40,7 @@ public class Router extends SimEnt{
 			{
 				if (link == _routingTable[i].link())
 				{
-					_routingTable[interfaceNumber] = null;
+					_routingTable[i] = null;
 				}
 			}
 
