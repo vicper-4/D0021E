@@ -25,6 +25,17 @@ public class Link extends SimEnt{
 			_connectorB=connectTo;
 	}
 
+    /**
+     * Disconnects the link from a connected simulation entity.
+     */
+	public void unsetConnector(SimEnt disconnectFrom)
+	{
+		if (_connectorA == disconnectFrom) 
+			_connectorA=null;
+		else if (_connectorB == disconnectFrom)
+			_connectorB=null;
+	}
+
 	// Called when a message enters the link
 	
 	public void recv(SimEnt src, Event ev)
@@ -40,6 +51,30 @@ public class Link extends SimEnt{
 			{
 				send(_connectorA, ev, _now);
 			}
+		} 
+        else if (ev instanceof MoveEnt)
+		{
+			SimEnt router = null;
+			SimEnt node = null;
+			
+			System.out.println("-------------Link recv move request");
+			
+			if (_connectorB instanceof Router)
+			{
+				router = _connectorB;
+				_connectorB = null;
+				node = _connectorA;
+			}
+			else
+			{
+				router = _connectorA;
+				_connectorA = null;
+				node = _connectorB;
+			}
+
+            ((Node)node).set_id(((MoveEnt)ev).networkId());
+			((Router)router).disconnectInterface((SimEnt)this);
+			((Router)router).connectInterface(((MoveEnt)ev).getInterface(), this, node);
 		}
 	}	
 }
