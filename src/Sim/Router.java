@@ -41,10 +41,9 @@ public class Router extends SimEnt{
 				if (link == _routingTable[i].link())
 				{
 					_routingTable[i] = null;
+					((Link) link).unsetConnector(this);
 				}
 			}
-
-		System.out.println("Trying to disconnect fromto port not in router");
 	}
 
 	// This method searches for an entry in the routing table that matches
