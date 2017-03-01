@@ -22,7 +22,7 @@ run:
 	java -cp $(BIN) $(main)
 
 run-jar:
-	java -jar $(PACNAME)
+	java -jar $(BIN)$(PACNAME)
 
 install: $(filelist)
 	@mkdir -p $(CLASSPATH)
