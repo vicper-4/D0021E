@@ -34,14 +34,19 @@ public class Switch extends SimEnt{
 	* This method disconnects links from the switch and also removes switch
 	* table information about what is connected to the other end of that link
 	*/
-	public void disconnectPort(int portNumber, SimEnt link)
+	public void disconnectPort(SimEnt link)
 	{
-		if (portNumber<_ports)
-			_switchTable[portNumber] = null;
-		else
-			System.out.println("Trying to disconnect fromto port not on switch");
-		
-		((Link) link).unsetConnector(this);
+		for(int i=0; i<_ports; i++)
+		{
+			if (_switchTable[i] != null)
+			{
+				if (link == _switchTable[i].link())
+				{
+					_switchTable[i] = null;
+					((Link) link).unsetConnector(this);
+				}
+			}
+		}
 	}
 
 	// This method searches for an entry in the switch-table that matches
