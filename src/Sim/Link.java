@@ -52,29 +52,43 @@ public class Link extends SimEnt{
 				send(_connectorA, ev, _now);
 			}
 		} 
-		else if (ev instanceof MoveEnt)
+		else if (ev instanceof DisconnectEnt)
 		{
-			SimEnt router = null;
-			SimEnt node = null;
-			
-			System.out.println("-------------Link recv move request");
-			
-			if (_connectorB instanceof Router)
-			{
-				router = _connectorB;
-				_connectorB = null;
-				node = _connectorA;
-			}
-			else
-			{
-				router = _connectorA;
-				_connectorA = null;
-				node = _connectorB;
-			}
+			SimEnt target = ((DisconnectEnt)ev).getTarget();
 
-			((Node)node).set_id(((MoveEnt)ev).networkId());
-			((Router)router).disconnectInterface((SimEnt)this);
-			((Router)router).connectInterface(((MoveEnt)ev).getInterface(), this, node);
+			if(target instanceof Router)
+			{
+				((Router)target).disconnectInterface((SimEnt)this);
+			}
+			else if(target instanceof Switch)
+			{
+				//TODO implement disconnection in Switch first. See Router for
+				//how to do it.
+			}
+			else if(target instanceof Node)
+			{
+				((Node)target).unsetPeer((SimEnt)this);
+			}
 		}
-	}	
+		else if (ev instanceof ConnectEnt &&
+				 (_connectorA == null ||
+				  _connectorB == null) )
+		{
+			SimEnt target = ((ConnectEnt)ev).getTarget();
+			SimEnt other = (_connectorA != null) ? _connectorA : _connectorB;
+
+			if(target instanceof Router)
+			{
+				((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this, other);
+			}
+			else if(target instanceof Switch)
+			{
+				((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this, other);
+			}
+			else if(target instanceof Node)
+			{
+				((Node)target).setPeer(this);
+			}
+		}
+	}
 }
