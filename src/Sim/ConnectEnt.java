@@ -4,9 +4,10 @@ public class ConnectEnt extends MoveEntEvent{
 	private SimEnt _to;
 	private int _interface;
 	
-	ConnectEnt (SimEnt _ent, int _interface)
+	ConnectEnt (SimEnt _ent, SimEnt _to, int _interface)
 	{
 		super(_ent);
+		this._to = _to;
 		this._interface = _interface;
 	}
 
