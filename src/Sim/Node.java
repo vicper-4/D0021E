@@ -35,22 +35,24 @@ public class Node extends SimEnt {
 	
 	public void setPeer (SimEnt peer)
 	{
-		_peer = peer;
-		
-		if(_peer instanceof Link )
+		if( peer instanceof Link &&
+			this._peer == null )
 		{
-			 ((Link) _peer).setConnector(this);
+			this._peer = peer;
+			((Link) _peer).setConnector(this);
 		}
 	}
 
 	/**
 	 * Disconnects the link.
 	 */
-	public void unsetPeer ()
+	public void unsetPeer(SimEnt peer)
 	{
-		if(_peer instanceof Link )
+		if(peer instanceof Link &&
+		   peer == this._peer )
 		{
-			 ((Link) _peer).unsetConnector(this);
+			((Link) _peer).unsetConnector(this);
+			this._peer = null;
 		}
 	}
 	
@@ -165,9 +167,11 @@ public class Node extends SimEnt {
 		_toHost = sender.nodeId();
 
 		//generate a new message to the sender
-		send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
-															 _toHost),
-										0), 0);
+		send(_peer,
+			 new Message(_id, 
+						 new NetworkAddr(_toNetwork, _toHost),
+						 0),
+			 0);
 	}
 
 	/**
