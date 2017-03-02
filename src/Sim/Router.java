@@ -87,11 +87,18 @@ public class Router extends SimEnt{
 		System.out.println("Router handles packet with seq: " + ((Message) ev).seq()+" from node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() );
 		SimEnt sendNext = getInterface(((Message) ev).destination().networkId());
 
+		// Send it along
 		if ( send(sendNext, ev, _now) != null)
 			System.out.println( "Router sends to node: " + 
 								((Message) ev).destination().networkId() + 
 								"." + 
 								((Message) ev).destination().nodeId()
 							  );
+
+		//Check if the sender is known. if not add it to the routing table
+		if ( getInterface( ((Message) ev).source().networkId() ) == null )
+		{
+			//TODO add sender to routing table
+		}
 	}
 }
