@@ -6,9 +6,9 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
-		//Link link1 = new Link();
+		Link link1 = new Link();
 		//Link link2 = new Link();
-		Link link1 = new LossyLink(1.5f,0.2f,0.05f);
+		//Link link1 = new LossyLink(1.5f,0.2f,0.05f);
 		Link link2 = new LossyLink(2.0f, 0.1f, 0.08f);
 	
 		Sink sink1 = new Sink();
@@ -40,14 +40,14 @@ public class Run {
 		// host2 will send 100 messages with time interval 10 to network 1, node 1. Sequence starts with number 2000
 		host1.StartSending(2, 1, 20, gen3, 1000);
 
-		Event disConEv1 = new DisconnectEnt(link2, host2);
+		//Event disConEv1 = new DisconnectEnt(link2, host2);
 		Event disConEv2 = new DisconnectEnt(link2, routeNode);
-		Event conEv1 = new ConnectEnt(link2, host2);
+		//Event conEv1 = new ConnectEnt(link2, host2);
 		Event conEv2 = new ConnectEnt(link2, routeNode, 2);
-		link2.send(link2, disConEv1, 20);
+		//link2.send(link2, disConEv1, 20);
 		link2.send(link2, disConEv2, 35);
-		link2.send(link2, conEv1, 50);
-		link2.send(link2, conEv2, 65);
+		//link2.send(link2, conEv1, 50);
+		link2.send(link2, conEv2, 45);
 
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());

@@ -73,6 +73,8 @@ public class Link extends SimEnt{
 	{
 		SimEnt target = ((DisconnectEnt)ev).getTarget();
 
+		System.out.println("--/-- Link disconnect event triggered");
+
 		if(target instanceof Router)
 		{
 			((Router)target).disconnectInterface((SimEnt)this);
@@ -92,6 +94,8 @@ public class Link extends SimEnt{
 	{
 		SimEnt target = ((ConnectEnt)ev).getTarget();
 		SimEnt other = (_connectorA != null) ? _connectorA : _connectorB;
+
+		System.out.println("--+-- Link connect event triggered");
 
 		if(target instanceof Router)
 		{
