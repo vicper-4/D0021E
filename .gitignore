@@ -100,3 +100,12 @@ local.properties
 .worksheet
 
 **.DS_Store
+
+
+desktop.ini
+/META-INF/
+/bin/
+/.idea/
+/Simulator.iml
+/.classpath
+/.project
