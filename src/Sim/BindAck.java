@@ -4,9 +4,9 @@ package Sim;
 // fields in the message are who the sender is, the destination and a sequence 
 // number
 
-public class BindUpdate extends Message{
+public class BindAck extends Message{
 
-	BindUpdate (NetworkAddr from, NetworkAddr to, int seq)
+	BindAck(NetworkAddr from, NetworkAddr to, int seq)
 	{
 		super(from,to,seq);
 	}

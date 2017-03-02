@@ -3,6 +3,8 @@ package Sim;
 // This class implements a node (host) it has an address, a peer that it communicates with
 // and it count messages send and received.
 
+import sun.nio.ch.Net;
+
 public class Node extends SimEnt {
 
 	/**
@@ -108,40 +110,51 @@ public class Node extends SimEnt {
 				_seq++;
 			}
 		}
-		if (ev instanceof Message)
+		else if (ev instanceof BindUpdate)
 		{
+			receiveBindUpdate( ((BindUpdate) ev).source() );
+		}
+		else if (ev instanceof Message)
+		{
+			recvMsg(src, ev);
+		}
+	}
 
+	/**
+	 * Passes messages to the sink
+	 * @param src
+	 * @param ev
+	 */
+	private void recvMsg(SimEnt src, Event ev){
+		// Make calculations
+		double currTime = SimEngine.getTime();
+		// TODO Should Node still calculate jitter?
+		double tt = currTime - ((Message) ev).timeSent;
+		calculateJitter(tt);
 
-			// Make calculations
-			double currTime = SimEngine.getTime();
-			double tt = currTime - ((Message) ev).timeSent;
-			calculateJitter(tt);
+		sink.recv((Message)ev, currTime);   // Pass message to sink
+		SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received. TODO should SimEngine.msgRecv() be refactored?
 
-			sink.recv((Message)ev, currTime);   // Pass message to sink
-			SimEngine.msgRecv(tt, getJitter()); // Report to SimEngine that a message has been received.
+		System.out.printf("Node %d.%d receives message with seq: %d"
+						+ " at time %f. Transport time was: %f ms %n",
+				_id.networkId(),
+				_id.nodeId(),
+				((Message) ev).seq(),
+				currTime,
+				tt);
 
-			System.out.printf("Node %d.%d receives message with seq: %d"
-					+ " at time %f. Transport time was: %f ms %n",
-					_id.networkId(),
-					_id.nodeId(),
-					((Message) ev).seq(),
-					currTime,
-					tt);
+		// Set message sender as target of new messages
+		// receiveBindUpdate( ((Message) ev).source() );
 
-			// Set message sender as target of new messages
-			bindAck( ((Message) ev).source() );
-
-			// If message received was sent to deprecated address,
-			// give sender my current address.
-			if (_deprecated_id != null) {
-				if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
-						&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
-					bindUpdate(((Message) ev).source());
-					System.out.printf("Link received message to deprecated address,"
-							+ " new address sent to sender %n");
-				}
+		// If message received was sent to deprecated address,
+		// give sender my current address.
+		if (_deprecated_id != null) {
+			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
+					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
+				sendBindUpdate(((Message) ev).source());
 			}
 		}
+
 	}
 
 	public void printStat()
@@ -161,28 +174,44 @@ public class Node extends SimEnt {
 	 * Sends a Bind Update to last sender to update its record of the network address of this node.
 	 * @param sender the record to be updated
 	 */
-	private void bindUpdate(NetworkAddr sender)
+	private void sendBindUpdate(NetworkAddr sender)
 	{
 		_toNetwork = sender.networkId();
 		_toHost = sender.nodeId();
 
 		//generate a new message to the sender
+		int delay = 0;
+		int seq   = 0;
 		send(_peer,
-			 new Message(_id, 
+			 new BindUpdate(_id,
 						 new NetworkAddr(_toNetwork, _toHost),
-						 0),
-			 0);
+						 seq),
+			 delay);
+
+		System.out.printf("Link received message to deprecated address,"
+				+ " new address sent to sender %n");
 	}
 
 	/**
 	 * Update this nodes record of another nodes network address
 	 * @param newAddr the new address of remote node
 	 */
-	private void bindAck(NetworkAddr newAddr)
+	private void receiveBindUpdate(NetworkAddr newAddr)
 	{
 		// if real BindAck it would also send an ack to the mobile node
-		System.out.println("bindAck on " + _id.networkId() + "." + _id.nodeId());
+		System.out.println("receiveBindUpdate on " + _id.networkId() + "." + _id.nodeId());
 		_toNetwork = newAddr.networkId();
 		_toHost = newAddr.nodeId();
+		sendBindAck();
+	}
+
+	private void sendBindAck(){
+		int delay = 0;
+		int seq   = 0;
+		send( _peer,
+			new BindAck( _id,
+				new NetworkAddr( _toNetwork, _toHost ),
+				seq ),
+			delay );
 	}
 }
