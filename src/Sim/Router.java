@@ -22,13 +22,29 @@ public class Router extends SimEnt{
 	public void connectInterface(int interfaceNumber, SimEnt link, SimEnt node)
 	{
 		if (interfaceNumber<_interfaces)
-		{
 			_routingTable[interfaceNumber] = new RouteTableEntry(link, node);
-		}
 		else
 			System.out.println("Trying to connect to port not in router");
 		
 		((Link) link).setConnector(this);
+	}
+
+	/**
+	* This method disconnects links from the router and also removes router
+	* information about what is connected to the other end of that link
+	*/
+	public void disconnectInterface(SimEnt link)
+	{
+		for(int i=0; i<_interfaces; i++)
+			if (_routingTable[i] != null)
+			{
+				if (link == _routingTable[i].link())
+				{
+					_routingTable[i] = null;
+				}
+			}
+
+		System.out.println("Trying to disconnect fromto port not in router");
 	}
 
 	// This method searches for an entry in the routing table that matches
@@ -37,18 +53,25 @@ public class Router extends SimEnt{
 	
 	private SimEnt getInterface(int networkAddress)
 	{
+		boolean pref, depr;
 		SimEnt routerInterface=null;
 		for(int i=0; i<_interfaces; i++)
 			if (_routingTable[i] != null)
 			{
-				if (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress)
+				pref = (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress);
+				
+				if (((Node) _routingTable[i].node()).getDepr() != null)
+					depr = (((Node) _routingTable[i].node()).getDepr().networkId() == networkAddress);
+				else
+					depr = false;
+				
+				if ( pref || depr)
 				{
 					routerInterface = _routingTable[i].link();
 				}
 			}
 		return routerInterface;
 	}
-	
 	
 	// When messages are received at the router this method is called
 	
@@ -58,9 +81,12 @@ public class Router extends SimEnt{
 		{
 			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
 			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
-			System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());		
-			send (sendNext, event, _now);
-	
-		}	
+
+			if(sendNext != null)
+			{
+				send (sendNext, event, _now);
+				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());
+			}
+		}
 	}
 }

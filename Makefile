@@ -10,7 +10,7 @@ PACKAGER 		:= jar
 PACFLAGS 		:= cfm
 PACMETA 		:= META-INF/
 MANIFEST 		:= $(PACMETA)MANIFEST.MF
-VERSION 		:= 2.0
+VERSION 		:= 3.0
 PACNAME 		:= Lab$(VERSION).jar
 
 filelist		:= $(SRCPATH)*.java
@@ -22,7 +22,7 @@ run:
 	java -cp $(BIN) $(main)
 
 run-jar:
-	java -jar $(PACNAME)
+	java -jar $(BIN)$(PACNAME)
 
 install: $(filelist)
 	@mkdir -p $(CLASSPATH)

@@ -16,7 +16,7 @@ public class Switch extends SimEnt{
 	}
 	
 	// This method connects links to the switch and also informs the 
-    // switch of the host connects to the other end of the link
+	// switch of the host connects to the other end of the link
 	
 	public void connectPort(int portNumber, SimEnt link, SimEnt node)
 	{
@@ -28,6 +28,20 @@ public class Switch extends SimEnt{
 			System.out.println("Trying to connect to port not in switch");
 		
 		((Link) link).setConnector(this);
+	}
+
+	/**
+	* This method disconnects links from the switch and also removes switch
+	* table information about what is connected to the other end of that link
+	*/
+	public void disconnectPort(int portNumber, SimEnt link)
+	{
+		if (portNumber<_ports)
+			_switchTable[portNumber] = null;
+		else
+			System.out.println("Trying to disconnect fromto port not on switch");
+		
+		((Link) link).unsetConnector(this);
 	}
 
 	// This method searches for an entry in the switch-table that matches

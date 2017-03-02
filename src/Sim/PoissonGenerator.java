@@ -8,16 +8,16 @@ public class PoissonGenerator extends Generator
 {
 	private double lambda;
 
-    /**
-     * @param mean some magic value that makes this do what it is supposed to.
-     */
+	/**
+	 * @param mean some magic value that makes this do what it is supposed to.
+	 */
 	PoissonGenerator(double mean)
 	{
 		super();
 		this.lambda = Math.exp(-mean);
 	}
 
-    //TODO Only returns whole ms. consider making it more granular
+	//TODO Only returns whole ms. consider making it more granular
 	/**
 	 * @return 	Pseudo-random microsecond on Poisson distribution.
 	 */
