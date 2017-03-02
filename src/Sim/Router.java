@@ -7,6 +7,7 @@ public class Router extends SimEnt{
 	private RouteTableEntry [] _routingTable;
 	private int _interfaces;
 	private int _now=0;
+	private int activeInterface;
 
 	// When created, number of interfaces are defined
 	
@@ -67,6 +68,7 @@ public class Router extends SimEnt{
 				if ( pref || depr)
 				{
 					routerInterface = _routingTable[i].link();
+					activeInterface = i;
 				}
 			}
 		return routerInterface;
@@ -92,7 +94,8 @@ public class Router extends SimEnt{
 			System.out.println( "Router sends to node: " + 
 								((Message) ev).destination().networkId() + 
 								"." + 
-								((Message) ev).destination().nodeId()
+								((Message) ev).destination().nodeId() +
+								" through interface " + activeInterface
 							  );
 
 		//Check if the sender is known. if not add it to the routing table
