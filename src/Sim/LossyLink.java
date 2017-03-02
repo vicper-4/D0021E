@@ -37,29 +37,27 @@ public class LossyLink extends Link{
 	 * @param ev	Event.
 	 */
 	@Override
-	public void recv(SimEnt src, Event ev)
+	protected void recvMsg(SimEnt src, Event ev)
 	{
-		if (ev instanceof Message)
+		Random random = new Random();
+		float dt = (random.nextFloat() * 2 - 1) * jitter;
+		double wait = delay + dt;
+
+		if (1.0f - random.nextFloat() > droprate)
 		{
-			Random random = new Random();
-			float dt = (random.nextFloat() * 2 - 1) * jitter;
-			double wait = delay + dt;
-			if (1.0f - random.nextFloat() > droprate)
+			//System.out.println("Link recv msg, passes it through");
+			if (src == _connectorA)
 			{
-				//System.out.println("Link recv msg, passes it through");
-				if (src == _connectorA)
-				{
-					send(_connectorB, ev, wait);
-				}
-				else
-				{
-					send(_connectorA, ev, wait);
-				}
+				send(_connectorB, ev, wait);
 			}
 			else
 			{
-				System.out.println("!!\t - LossyLink recv msg, randomly drops it");
+				send(_connectorA, ev, wait);
 			}
+		}
+		else
+		{
+			System.out.println("!!\t - LossyLink recv msg, randomly drops it");
 		}
 	}
 }

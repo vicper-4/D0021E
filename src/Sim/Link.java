@@ -42,53 +42,68 @@ public class Link extends SimEnt{
 	{
 		if (ev instanceof Message)
 		{
-			System.out.println("Link recv msg, passes it through");
-			if (src == _connectorA)
-			{
-				send(_connectorB, ev, _now);
-			}
-			else
-			{
-				send(_connectorA, ev, _now);
-			}
+			recvMsg(src, ev);
 		} 
 		else if (ev instanceof DisconnectEnt)
 		{
-			SimEnt target = ((DisconnectEnt)ev).getTarget();
-
-			if(target instanceof Router)
-			{
-				((Router)target).disconnectInterface((SimEnt)this);
-			}
-			else if(target instanceof Switch)
-			{
-				//TODO implement disconnection in Switch first. See Router for
-				//how to do it.
-			}
-			else if(target instanceof Node)
-			{
-				((Node)target).unsetPeer((SimEnt)this);
-			}
+			recvDisc(src, ev);
 		}
 		else if (ev instanceof ConnectEnt &&
 				 (_connectorA == null ||
 				  _connectorB == null) )
 		{
-			SimEnt target = ((ConnectEnt)ev).getTarget();
-			SimEnt other = (_connectorA != null) ? _connectorA : _connectorB;
+			recvConn(src, ev);
+		}
+	}
 
-			if(target instanceof Router)
-			{
-				((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this, other);
-			}
-			else if(target instanceof Switch)
-			{
-				((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this, other);
-			}
-			else if(target instanceof Node)
-			{
-				((Node)target).setPeer(this);
-			}
+	protected void recvMsg(SimEnt src, Event ev) 
+	{
+		System.out.println("Link recv msg, passes it through");
+		if (src == _connectorA)
+		{
+			send(_connectorB, ev, _now);
+		}
+		else
+		{
+			send(_connectorA, ev, _now);
+		}
+	}
+
+	protected void recvDisc(SimEnt src, Event ev)
+	{
+		SimEnt target = ((DisconnectEnt)ev).getTarget();
+
+		if(target instanceof Router)
+		{
+			((Router)target).disconnectInterface((SimEnt)this);
+		}
+		else if(target instanceof Switch)
+		{
+			//TODO implement disconnection in Switch first. See Router for
+			//how to do it.
+		}
+		else if(target instanceof Node)
+		{
+			((Node)target).unsetPeer((SimEnt)this);
+		}
+	}
+
+	protected void recvConn(SimEnt src, Event ev)
+	{
+		SimEnt target = ((ConnectEnt)ev).getTarget();
+		SimEnt other = (_connectorA != null) ? _connectorA : _connectorB;
+
+		if(target instanceof Router)
+		{
+			((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this, other);
+		}
+		else if(target instanceof Switch)
+		{
+			((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this, other);
+		}
+		else if(target instanceof Node)
+		{
+			((Node)target).setPeer(this);
 		}
 	}
 }
