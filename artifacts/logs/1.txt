@@ -1,0 +1,33 @@
+Node 1.1 sent message with seq: 1 at time 0.0
+Link recv msg, passes it through
+Router handles packet with seq: 1 from node: 1.1
+Router sends to node: 2.2
+!!	 - LossyLink recv msg, randomly drops it
+Node 1.1 sent message with seq: 2 at time 5.0
+Link recv msg, passes it through
+Router handles packet with seq: 2 from node: 1.1
+Router sends to node: 2.2
+Node 2.1 receives message with seq: 2 at time 7.280226945877075 It took 2.280226945877075 ms.
+:: Current average jitter: 0.0ms
+Node 1.1 sent message with seq: 3 at time 10.0
+Link recv msg, passes it through
+Router handles packet with seq: 3 from node: 1.1
+Router sends to node: 2.2
+!!	 - LossyLink recv msg, randomly drops it
+Node 1.1 sent message with seq: 4 at time 15.0
+Link recv msg, passes it through
+Router handles packet with seq: 4 from node: 1.1
+Router sends to node: 2.2
+!!	 - LossyLink recv msg, randomly drops it
+Node 1.1 sent message with seq: 5 at time 20.0
+Link recv msg, passes it through
+Router handles packet with seq: 5 from node: 1.1
+Router sends to node: 2.2
+Node 2.1 receives message with seq: 5 at time 21.720706939697266 It took 1.7207069396972656 ms.
+:: Current average jitter: 0.1398800015449524ms
+Node 1.1 sent message with seq: 6 at time 25.0
+Link recv msg, passes it through
+Router handles packet with seq: 6 from node: 1.1
+Router sends to node: 2.2
+Node 2.1 receives message with seq: 6 at time 27.15979290008545 It took 2.159792900085449 ms.
+:: Current average jitter: 0.12865910265180794ms

@@ -1,0 +1,26 @@
+Node 1.1 sent message with seq: 1198 at time 5985.0
+Link recv msg, passes it through
+Router handles packet with seq: 1198 from node: 1.1
+Router sends to node: 2.2
+Node 2.1 receives message with seq: 1198 at time 5987.115505933762 It took 2.1155059337615967 ms.
+:: Current average jitter: 0.2033217850148349ms
+Node 1.1 sent message with seq: 1199 at time 5990.0
+Link recv msg, passes it through
+Router handles packet with seq: 1199 from node: 1.1
+Router sends to node: 2.2
+Node 2.1 receives message with seq: 1199 at time 5992.376339435577 It took 2.3763394355773926 ms.
+:: Current average jitter: 0.20347701185210437ms
+Node 1.1 sent message with seq: 1200 at time 5995.0
+Link recv msg, passes it through
+Router handles packet with seq: 1200 from node: 1.1
+Router sends to node: 2.2
+Node 2.1 receives message with seq: 1200 at time 5996.9233630895615 It took 1.9233630895614624 ms.
+:: Current average jitter: 0.20336509409585343ms
+
+Results
+-------
+Droprate: 11% sent: 1200, received: 1068
+Average transit time: 2.0073119377375543ms
+Average jitter: 0.20336509409585343ms
+
+Process finished with exit code 0
