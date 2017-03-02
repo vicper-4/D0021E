@@ -41,10 +41,9 @@ public class Router extends SimEnt{
 				if (link == _routingTable[i].link())
 				{
 					_routingTable[i] = null;
+					((Link) link).unsetConnector(this);
 				}
 			}
-
-		System.out.println("Trying to disconnect fromto port not in router");
 	}
 
 	// This method searches for an entry in the routing table that matches
@@ -75,18 +74,31 @@ public class Router extends SimEnt{
 	
 	// When messages are received at the router this method is called
 	
-	public void recv(SimEnt source, Event event)
+	public void recv(SimEnt src, Event ev)
 	{
-		if (event instanceof Message)
+		if (ev instanceof Message)
 		{
-			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
-			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
+			recvMsg(src, ev);
+		}
+	}
 
-			if(sendNext != null)
-			{
-				send (sendNext, event, _now);
-				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());
-			}
+	private void recvMsg(SimEnt src, Event ev)
+	{
+		System.out.println("Router handles packet with seq: " + ((Message) ev).seq()+" from node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() );
+		SimEnt sendNext = getInterface(((Message) ev).destination().networkId());
+
+		// Send it along
+		if ( send(sendNext, ev, _now) != null)
+			System.out.println( "Router sends to node: " + 
+								((Message) ev).destination().networkId() + 
+								"." + 
+								((Message) ev).destination().nodeId()
+							  );
+
+		//Check if the sender is known. if not add it to the routing table
+		if ( getInterface( ((Message) ev).source().networkId() ) == null )
+		{
+			//TODO add sender to routing table
 		}
 	}
 }

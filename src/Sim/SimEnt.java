@@ -33,10 +33,14 @@ public abstract class SimEnt {
 	
 	protected final EventHandle send(SimEnt destination, Event event, double delayExecution)
 	{
-		// Makes sure that events are not made in negative time
-		if(delayExecution < 0.0) delayExecution = 0.0;
-		// this object is the registrator/source submitting the event
-		return SimEngine.instance().register(this, destination, event, delayExecution);
+		if(destination != null)
+		{
+			// Makes sure that events are not made in negative time
+			if(delayExecution < 0.0) delayExecution = 0.0;
+			// this object is the registrator/source submitting the event
+			return SimEngine.instance().register(this, destination, event, delayExecution);
+		}
+		return null;
 	}
 	
 	
