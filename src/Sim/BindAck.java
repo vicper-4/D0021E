@@ -10,5 +10,10 @@ public class BindAck extends Message{
 	{
 		super(from,to,seq);
 	}
+
+	BindAck(NetworkAddr from, NetworkAddr to, int seq, int ttl)
+	{
+		super(from,to,seq,ttl);
+	}
 }
 	
