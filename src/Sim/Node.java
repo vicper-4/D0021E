@@ -16,6 +16,7 @@ public class Node extends SimEnt {
 
 	protected NetworkAddr _id;
 	private NetworkAddr _deprecated_id;
+	private NetworkAddr homeAgent;
 	protected SimEnt _peer;
 	private int _sentmsg=0;
 	private int _seq = 0;
@@ -110,6 +111,10 @@ public class Node extends SimEnt {
 		{
 			recvBindUpdate( ((BindUpdate) ev).source() );
 		}
+		else if (ev instanceof RedirMsg)
+		{
+			recvRedirMsg(ev);
+		}
 		else if (ev instanceof Message)
 		{
 			recvMsg(ev);
@@ -148,6 +153,8 @@ public class Node extends SimEnt {
 		System.out.printf("%n!! Node %d.%d received RouterAdvertisement %n",_id.networkId(), _id.nodeId());
 		_assignedRouter = true;
 		startSending();
+
+		send(_peer, new RegReq(_id, homeAgent, _seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
 	}
 
 	/** TODO Javadoc
@@ -182,10 +189,14 @@ public class Node extends SimEnt {
 		if (_deprecated_id != null) {
 			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
 					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
-				sendBindUpdate(((Message) ev).source());
 			}
 		}
+	}
 
+	private void recvRedirMsg(Event ev)
+	{
+		send(this, ((RedirMsg) ev).getOriginal(), 0);
+		sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
 	}
 
 	// TODO? Javadoc
