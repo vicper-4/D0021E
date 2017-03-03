@@ -15,6 +15,7 @@ public class Router extends SimEnt{
 	{
 		_interface = new SimEnt[interfaces];
 		_interfaces=interfaces;
+		send(this, new TimerEvent(), 10);
 	}
 	
 	// This method connects links to the router and also informs the 
@@ -113,10 +114,52 @@ public class Router extends SimEnt{
 	
 	public void recv(SimEnt src, Event ev)
 	{
-		if (ev instanceof Message)
+		if (ev instanceof TimerEvent)
+		{
+			recvTimerEvent(ev);
+		}
+		else if (ev instanceof RouterSolicitation)
+		{
+			recvRouterSolicitation(src, ev);
+		}
+		else if (ev instanceof RouterAdvertisement);
+		else if (ev instanceof Message)
 		{
 			recvMsg(src, ev);
 		}
+	}
+
+	private void recvTimerEvent(Event ev)
+	{
+		sendRouterAdvertisement(null, ev);
+		send(this, new TimerEvent(), 15);
+	}
+
+	private int sentAdvertisements = 0;
+	private void sendRouterAdvertisement(SimEnt src, Event ev)
+	{
+		RouterAdvertisement advertisement = new RouterAdvertisement(_broadcast);
+
+//		if (src!= null)
+//		{
+//			SimEnt answer = getLink( ((Message) ev).source().networkId() );
+//			System.out.println("Router sends RouterAdvertisement on interface " + getLinkPlacement(answer));
+//			send(answer, advertisement, _now);
+//		}
+		if(sentAdvertisements < 20){
+			System.out.println("!! Router sending RouterAdvertisement on all interfaces at time " + SimEngine.getTime());
+			for(int i = 0; i < _interfaces; i++)
+			{
+				send(_interface[i], advertisement, _now);
+			}
+			sentAdvertisements++;
+		}
+	}
+
+	private void recvRouterSolicitation(SimEnt src, Event ev)
+	{
+		System.out.println("!! Router received RouterSolicitation, sending RouterAdvertisement");
+		sendRouterAdvertisement(src, ev);
 	}
 
 	private void recvMsg(SimEnt src, Event ev)
