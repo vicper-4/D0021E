@@ -5,10 +5,12 @@ package Sim;
 // number
 
 public class BindUpdate extends Message{
+	private NetworkAddr _deprecatedId;
 
-	BindUpdate (NetworkAddr from, NetworkAddr to, int seq)
+	BindUpdate (NetworkAddr from, NetworkAddr to, int seq, NetworkAddr deprecated)
 	{
 		super(from,to,seq);
+		_deprecatedId = deprecated;
 	}
 }
 	

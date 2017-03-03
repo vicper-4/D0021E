@@ -3,8 +3,6 @@ package Sim;
 // This class implements a node (host) it has an address, a peer that it communicates with
 // and it count messages send and received.
 
-import sun.nio.ch.Net;
-
 public class Node extends SimEnt {
 
 	/**
@@ -71,6 +69,7 @@ public class Node extends SimEnt {
 //**********************************************************************************	
 	// Just implemented to generate some traffic for demo.
 	// In one of the labs you will create some traffic generators
+	//TODO look over start sending. Should stuff be moved to generator?
 	
 	private int _stopSendingAfter = 0; //messages
 	private int _timeBetweenSending = 10; //time between messages
@@ -94,38 +93,46 @@ public class Node extends SimEnt {
 	public void recv(SimEnt src, Event ev)
 	{
 		if (ev instanceof TimerEvent)
-		{			
-			if (_stopSendingAfter > _sentmsg)
-			{
-				_sentmsg++;
-				send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
-															 _toHost),
-										_seq), 0);
-				send(this, new TimerEvent(),gen.delay());
-				SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
-
-				// Presentation:
-				System.out.println("Node " + _id.networkId() + "."
-						+ _id.nodeId() + " sent message with seq: " + _seq + " at time " + SimEngine.getTime());
-				_seq++;
-			}
+		{
+			recvTimerEvent();
 		}
 		else if (ev instanceof BindUpdate)
 		{
-			receiveBindUpdate( ((BindUpdate) ev).source() );
+			recvBindUpdate( ((BindUpdate) ev).source() );
 		}
 		else if (ev instanceof Message)
 		{
-			recvMsg(src, ev);
+			recvMsg(ev);
 		}
 	}
 
-	/**
-	 * Passes messages to the sink
-	 * @param src
-	 * @param ev
+	// TODO Javadoc
+	private void recvTimerEvent()
+	{
+		if (_stopSendingAfter > _sentmsg)
+		{
+			_sentmsg++;
+			send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
+														 _toHost),
+									_seq), 0);
+			send(this, new TimerEvent(),gen.delay());
+			SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
+
+			// Presentation:
+			System.out.println("Node " + _id.networkId() + "."
+					+ _id.nodeId() + " sent message with seq: " + _seq
+					+ " at time " + SimEngine.getTime());
+			_seq++;
+		}
+
+	}
+
+	/** TODO Javadoc
+	 * Passes messages to the sink and keeps track of if a BindUpdate should be sent
+	 * @param ev  TODO
 	 */
-	private void recvMsg(SimEnt src, Event ev){
+	private void recvMsg(Event ev)
+	{
 		// Make calculations
 		double currTime = SimEngine.getTime();
 		// TODO Should Node still calculate jitter?
@@ -143,8 +150,9 @@ public class Node extends SimEnt {
 				currTime,
 				tt);
 
+		// TODO block should probably be removed
 		// Set message sender as target of new messages
-		// receiveBindUpdate( ((Message) ev).source() );
+		// recvBindUpdate( ((Message) ev).source() );
 
 		// If message received was sent to deprecated address,
 		// give sender my current address.
@@ -157,6 +165,7 @@ public class Node extends SimEnt {
 
 	}
 
+	// TODO? Javadoc
 	public void printStat()
 	{
 		//System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
@@ -185,7 +194,8 @@ public class Node extends SimEnt {
 		send(_peer,
 			 new BindUpdate(_id,
 						 new NetworkAddr(_toNetwork, _toHost),
-						 seq),
+						 seq,
+					     _deprecated_id),
 			 delay);
 
 		System.out.printf("Link received message to deprecated address,"
@@ -196,22 +206,26 @@ public class Node extends SimEnt {
 	 * Update this nodes record of another nodes network address
 	 * @param newAddr the new address of remote node
 	 */
-	private void receiveBindUpdate(NetworkAddr newAddr)
+	private void recvBindUpdate(NetworkAddr newAddr)
 	{
 		// if real BindAck it would also send an ack to the mobile node
-		System.out.println("receiveBindUpdate on " + _id.networkId() + "." + _id.nodeId());
+		System.out.println("recvBindUpdate on " + _id.networkId() + "." + _id.nodeId());
 		_toNetwork = newAddr.networkId();
 		_toHost = newAddr.nodeId();
 		sendBindAck();
 	}
 
-	private void sendBindAck(){
+	// TODO Javadoc
+	private void sendBindAck()
+	{
+
+		// generate ack to sender
 		int delay = 0;
 		int seq   = 0;
 		send( _peer,
 			new BindAck( _id,
-				new NetworkAddr( _toNetwork, _toHost ),
-				seq ),
+						new NetworkAddr( _toNetwork, _toHost ),
+						seq ),
 			delay );
 	}
 }
