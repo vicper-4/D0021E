@@ -58,7 +58,7 @@ public class Link extends SimEnt{
 
 	protected void recvMsg(SimEnt src, Event ev) 
 	{
-		System.out.println("Link recv msg, passes it through");
+		// System.out.println("Link recv msg, passes it through"); // TODO remove this? plz?
 		if (src == _connectorA)
 		{
 			send(_connectorB, ev, _now);
@@ -77,7 +77,7 @@ public class Link extends SimEnt{
 
 		if(target instanceof Router)
 		{
-			((Router)target).disconnectInterface((SimEnt)this);
+			((Router)target).disconnectLink((SimEnt)this);
 		}
 		else if(target instanceof Switch)
 		{
@@ -99,7 +99,7 @@ public class Link extends SimEnt{
 
 		if(target instanceof Router)
 		{
-			((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this, other);
+			((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this);
 		}
 		else if(target instanceof Switch)
 		{

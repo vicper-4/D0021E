@@ -5,20 +5,18 @@ package Sim;
 // connected to the other side of the link
 
 public class RouteTableEntry extends TableEntry{
-
-	RouteTableEntry(SimEnt link, SimEnt node)
+	RouteTableEntry(int _interface, NetworkAddr _address)
 	{
-		super(link, node);
+		super(_interface, _address);
 	}
 	
-	public SimEnt link()
+	public int getInterface()
 	{
-		return super.link();
+		return super.getNic();
 	}
 
-	public SimEnt node()
+	public int getAddress()
 	{
-		return super.node();
+		return super.getAddr().networkId();
 	}
-	
 }
