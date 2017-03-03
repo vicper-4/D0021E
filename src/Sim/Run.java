@@ -28,15 +28,15 @@ public class Run {
 		// side of the link is also provided
 		// Note. A switch is created in same way using the Switch class
 		Router routeNode = new Router(3);
-		routeNode.connectInterface(0, link1, host1);
-		routeNode.connectInterface(1, link2, host2);
+		routeNode.connectInterface(0, link1);
+		routeNode.connectInterface(1, link2);
 
 		// Generate some traffic
 		Generator gen1 = new ConstantGenerator(5);
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
 		// host1 will send 500 messages with time interval 5 to network 2, node 1. Sequence starts with number 1000
-		host2.StartSending(1, 1, 25, gen2, 2000); 
+		host2.StartSending(1, 1, 20, gen2, 2000); 
 		// host2 will send 100 messages with time interval 10 to network 1, node 1. Sequence starts with number 2000
 		host1.StartSending(2, 1, 20, gen3, 1000);
 

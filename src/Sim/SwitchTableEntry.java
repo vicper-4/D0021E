@@ -7,19 +7,19 @@ package Sim;
 
 public class SwitchTableEntry extends TableEntry{
 
-	SwitchTableEntry(SimEnt link, SimEnt node)
+	SwitchTableEntry(int _port, NetworkAddr _mac)
 	{
-		super(link, node);
+		super(_port, _mac);
 	}
 	
-	public SimEnt link()
+	public int getPort()
 	{
-		return super.link();
+		return super.getNic();
 	}
 
-	public SimEnt node()
+	public int getId()
 	{
-		return super.node();
+		return super.getAddr().nodeId();
 	}
 
 }
