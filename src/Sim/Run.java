@@ -49,9 +49,9 @@ public class Run {
 		Generator gen1 = new ConstantGenerator(5);
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
-		host1.StartSending(2, 1, 20, gen2, 1000);
-		host2.StartSending(3, 1, 20, gen2, 2000);
-		host3.StartSending(1, 1, 20, gen2, 3000);
+		host1.up(2, 1, 100, gen1, 1000);
+		host2.up(3, 1, 100, gen1, 2000);
+		host3.up(1, 1, 35, gen1, 3000);
 
 		//Event disConEv1 = new DisconnectEnt(link2, host2);
 		Event disConEv2 = new DisconnectEnt(link2, routeNode);

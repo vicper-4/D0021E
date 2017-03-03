@@ -21,6 +21,7 @@ public class Node extends SimEnt {
 	private int _seq = 0;
 	private Generator gen;
 	private Sink sink;
+	private boolean _assignedRouter = false;
 
 
 	public Node (int network, int node, Sink sink)
@@ -76,14 +77,19 @@ public class Node extends SimEnt {
 	private int _toNetwork = 0;
 	private int _toHost = 0;
 
-	public void StartSending(int network, int node, int number, Generator gen, int startSeq)
+	public void up(int network, int node, int number, Generator gen, int startSeq)
 	{
 		_stopSendingAfter = number;
 		this.gen = gen;
 		_toNetwork = network;
 		_toHost = node;
 		_seq = startSeq;
-		send(this, new TimerEvent(),0);	
+		startSending();
+	}
+
+	private void startSending()
+	{
+		send(this, new TimerEvent(),0);
 	}
 
 //**********************************************************************************
@@ -92,7 +98,11 @@ public class Node extends SimEnt {
 	
 	public void recv(SimEnt src, Event ev)
 	{
-		if (ev instanceof TimerEvent)
+		if (ev instanceof RouterAdvertisement)
+		{
+			recvRouterAdvertisement();
+		}
+		else if (ev instanceof TimerEvent)
 		{
 			recvTimerEvent();
 		}
@@ -109,7 +119,13 @@ public class Node extends SimEnt {
 	// TODO Javadoc
 	private void recvTimerEvent()
 	{
-		if (_stopSendingAfter > _sentmsg)
+		// TODO check for router handshake
+		if (!_assignedRouter) {
+			System.out.printf("%n?? Node %d.%d knows of no router, sends RouterSolicitation",_id.networkId(), _id.nodeId());
+			send(_peer, new RouterSolicitation(_id, _broadcast,1), 0);
+			send(this, new TimerEvent(), 2);
+		}
+		else if (_stopSendingAfter > _sentmsg)
 		{
 			_sentmsg++;
 			send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
@@ -125,6 +141,13 @@ public class Node extends SimEnt {
 			_seq++;
 		}
 
+	}
+
+	private void recvRouterAdvertisement()
+	{
+		System.out.printf("%n!! Node %d.%d received RouterAdvertisement %n",_id.networkId(), _id.nodeId());
+		_assignedRouter = true;
+		startSending();
 	}
 
 	/** TODO Javadoc
