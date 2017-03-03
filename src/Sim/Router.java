@@ -140,19 +140,16 @@ public class Router extends SimEnt{
 	{
 		RouterAdvertisement advertisement = new RouterAdvertisement(_broadcast);
 
-//		if (src!= null)
-//		{
-//			SimEnt answer = getLink( ((Message) ev).source().networkId() );
-//			System.out.println("Router sends RouterAdvertisement on interface " + getLinkPlacement(answer));
-//			send(answer, advertisement, _now);
-//		}
-		if(sentAdvertisements < 20){
+		if(sentAdvertisements < 20){ // TODO ugly hack to make it stop!
 			System.out.println("!! Router sending RouterAdvertisement on all interfaces at time " + SimEngine.getTime());
 			for(int i = 0; i < _interfaces; i++)
 			{
 				send(_interface[i], advertisement, _now);
 			}
 			sentAdvertisements++;
+		}
+		else{
+			System.exit(0); // TODO still ugly hack
 		}
 	}
 
