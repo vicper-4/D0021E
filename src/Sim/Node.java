@@ -85,7 +85,7 @@ public class Node extends SimEnt {
 		_toNetwork = network;
 		_toHost = node;
 		_seq = startSeq;
-		startSending();
+		//startSending();
 	}
 
 	private void startSending()
@@ -126,7 +126,7 @@ public class Node extends SimEnt {
 	{
 		// TODO check for router handshake
 		if (!_assignedRouter) {
-			System.out.printf("%n?? Node %d.%d knows of no router, sends RouterSolicitation",_id.networkId(), _id.nodeId());
+			System.out.printf("%n?? Node %d.%d knows of no router, sends RouterSolicitation\n",_id.networkId(), _id.nodeId());
 			send(_peer, new RouterSolicitation(_id, _broadcast,1), 0);
 			send(this, new TimerEvent(), 2);
 		}
