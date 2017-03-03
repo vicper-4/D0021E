@@ -45,7 +45,7 @@ public class LossyLink extends Link{
 
 		if (1.0f - random.nextFloat() > droprate)
 		{
-			//System.out.println("Link recv msg, passes it through");
+			//System.out.println("Link recv msg, passes it through"); // TODO Remove this? plz?
 			if (src == _connectorA)
 			{
 				send(_connectorB, ev, wait);
