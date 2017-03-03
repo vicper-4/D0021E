@@ -14,9 +14,9 @@ public class Node extends SimEnt {
 		this._id = _id;
 	}
 
-	private NetworkAddr _id;
+	protected NetworkAddr _id;
 	private NetworkAddr _deprecated_id;
-	private SimEnt _peer;
+	protected SimEnt _peer;
 	private int _sentmsg=0;
 	private int _seq = 0;
 	private Generator gen;
