@@ -64,11 +64,18 @@ public class HomeAgent extends Node {
 			tmpAddr = tmpAddr._next;
 		}
 
-		send(_peer, new RedirMsg( _id, redirAddr._address, 0, ev), 0);
+		if (redirAddr != null)
+		{
+			send(_peer, new RedirMsg( _id, redirAddr._address, 0, ev), 0);
+
+			System.out.println("HA recives message intended for registerd mobile node");
+		}
 	}
 
 	private void recvRegReq(Event ev)
 	{
+		System.out.println("HA recives request to register mobile node");
+
 		AddressEntry entry = new AddressEntry( ((RegReq) ev).source(), 
 											   ((RegReq) ev)._valid, 
 											   ((RegReq) ev)._preferred

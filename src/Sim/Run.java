@@ -10,6 +10,7 @@ public class Run {
 		Link link2 = new Link();
 		Link link3 = new Link();
 		Link link4 = new Link();
+		Link link5 = new Link();
 
 		//Link link1 = new LossyLink(1.5f,0.2f,0.05f);
 		//Link link2 = new LossyLink(2.0f, 0.1f, 0.08f);
@@ -23,6 +24,10 @@ public class Run {
 		Node host2 = new Node(2,1, sink2);
 		Node host3 = new Node(3,1, sink3);
 
+		Node ha = new HomeAgent(4,2, sink3);
+		ha.setPeer(link5);
+		host2.setHA(new NetworkAddr(4, 2));
+
 		//Connect links to hosts
 		host1.setPeer(link1);
 		host2.setPeer(link2);
@@ -33,10 +38,11 @@ public class Run {
 		// the host connected to the other
 		// side of the link is also provided
 		// Note. A switch is created in same way using the Switch class
-		Router routeNode = new Router(4);
-		Router router2 = new Router(2);
+		Router routeNode = new Router(5);
+		Router router2 = new Router(3);
 		routeNode.connectInterface(0, link1);
 		routeNode.connectInterface(1, link2);
+		routeNode.connectInterface(2, link5);
 
 		// Connect the two routers
 		routeNode.connectInterface(3, link3);
@@ -56,7 +62,7 @@ public class Run {
 		//Event disConEv1 = new DisconnectEnt(link2, host2);
 		Event disConEv2 = new DisconnectEnt(link2, routeNode);
 		//Event conEv1 = new ConnectEnt(link2, host2);
-		Event conEv2 = new ConnectEnt(link2, routeNode, 2);
+		Event conEv2 = new ConnectEnt(link2, router2, 2);
 		//link2.send(link2, disConEv1, 20);
 		link2.send(link2, disConEv2, 35);
 		//link2.send(link2, conEv1, 50);

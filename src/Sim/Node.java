@@ -32,7 +32,10 @@ public class Node extends SimEnt {
 		this.sink = sink;
 	}
 	
-	
+	public void setHA(NetworkAddr ha)
+	{
+		homeAgent = ha;
+	}
 	// Sets the peer to communicate with. This node is single homed
 	
 	public void setPeer (SimEnt peer)

@@ -162,7 +162,10 @@ public class Router extends SimEnt{
 	private void recvMsg(SimEnt src, Event ev)
 	{
 		System.out.println("Router handles packet with seq: " + ((Message) ev).seq()+" from node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() );
-		SimEnt sendNext = getLink(((Message) ev).destination().networkId());
+		
+		SimEnt sendNext = null;
+		if (((Message) ev).destination() != null )
+			sendNext = getLink(((Message) ev).destination().networkId());
 
 		// Send it along
 		if ( sendNext != null && ((Message) ev).ttl-- >= 0 )
