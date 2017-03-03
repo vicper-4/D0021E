@@ -6,14 +6,14 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
-		//Link link1 = new Link();
-		//Link link2 = new Link();
+		Link link1 = new Link();
+		Link link2 = new Link();
 		Link link3 = new Link();
 		Link link4 = new Link();
 		Link link5 = new Link();
 
-		Link link1 = new LossyLink(0.4f,0.2f,0.0f);
-		Link link2 = new LossyLink(0.2f, 0.1f, 0.0f);
+		//Link link1 = new LossyLink(0.4f,0.2f,0.0f);
+		//Link link2 = new LossyLink(0.2f, 0.1f, 0.0f);
 	
 		Sink sink1 = new Sink();
 		Sink sink2 = new Sink();
@@ -38,16 +38,16 @@ public class Run {
 		// the host connected to the other
 		// side of the link is also provided
 		// Note. A switch is created in same way using the Switch class
-		Router routeNode = new Router(5);
+		Router routeNode = new Router(3);
 		Router router2 = new Router(3);
 		routeNode.connectInterface(0, link1);
 		routeNode.connectInterface(1, link2);
-		routeNode.connectInterface(2, link5);
+		routeNode.connectInterface(2, link3);
 
 		// Connect the two routers
-		routeNode.connectInterface(3, link3);
 		router2.connectInterface(0, link3);
 		router2.connectInterface(1, link4);
+		router2.connectInterface(2, link5);
 
 
 
@@ -55,18 +55,18 @@ public class Run {
 		Generator gen1 = new ConstantGenerator(5);
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
-		host1.up(2, 1, 100, gen1, 1000);
-		host2.up(3, 1, 100, gen1, 2000);
-		host3.up(1, 1, 35, gen1, 3000);
+		host1.up(2, 1, 100, gen2, 1000);
+		host2.up(3, 1, 100, gen2, 2000);
+		host3.up(1, 1, 35, gen2, 3000);
 
 		//Event disConEv1 = new DisconnectEnt(link2, host2);
-		Event disConEv2 = new DisconnectEnt(link2, routeNode);
+		Event disConEv2 = new DisconnectEnt(link2, host2);
 		//Event conEv1 = new ConnectEnt(link2, host2);
-		Event conEv2 = new ConnectEnt(link2, router2, 2);
+		Event conEv2 = new ConnectEnt(link5, host2, 2);
 		//link2.send(link2, disConEv1, 20);
 		link2.send(link2, disConEv2, 35);
 		//link2.send(link2, conEv1, 50);
-		link2.send(link2, conEv2, 65);
+		link5.send(link5, conEv2, 65);
 
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());

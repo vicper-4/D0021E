@@ -62,16 +62,15 @@ public class Router extends SimEnt{
 
 	private int getInterface(int networkAddress)
 	{
-		if ( _routingTable == null )
-			return -1;
 		RouteTableEntry entry = (RouteTableEntry)_routingTable;
 
-		do {
+		while(entry != null)
+		{
 			if ( entry.getAddress() == networkAddress )
 				return entry.getInterface();
 
 			entry = (RouteTableEntry)entry.getNext();
-		}while(entry != null);
+		}
 
 		return -1;
 	}
@@ -131,7 +130,7 @@ public class Router extends SimEnt{
 
 	private void recvTimerEvent(Event ev)
 	{
-		sendRouterAdvertisement(null, ev);
+		sendRouterAdvertisement(this, ev);
 		send(this, new TimerEvent(), 15);
 	}
 
@@ -161,7 +160,7 @@ public class Router extends SimEnt{
 
 	private void recvMsg(SimEnt src, Event ev)
 	{
-		System.out.println("Router handles packet with seq: " + ((Message) ev).seq()+" from node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() );
+		System.out.println(this + " handles packet with seq: " + ((Message) ev).seq()+" from node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() );
 		
 		SimEnt sendNext = null;
 		if (((Message) ev).destination() != null )
@@ -172,7 +171,7 @@ public class Router extends SimEnt{
 		{
 			send(sendNext, ev, _now);
 
-			System.out.println( "Router sends to node: " + 
+			System.out.println( this + " sends to node: " + 
 								((Message) ev).destination().networkId() + 
 								"." + 
 								((Message) ev).destination().nodeId() +
@@ -182,7 +181,7 @@ public class Router extends SimEnt{
 		//TODO should we realy send to all interfaces?
 		else if ( ((Message) ev).ttl >= 0 )
 		{
-			System.out.println( "Router forwards message to unknown address to all interfaces. ");
+			System.out.println( this + " forwards message to unknown address to all interfaces. ");
 
 			for(int i = 0; i < _interfaces; i++)
 			{
@@ -192,14 +191,15 @@ public class Router extends SimEnt{
 					//System.out.println(src + " -- " + _interface[i]);
 					send(_interface[i], ev, _now);
 				}
+				else
+			System.out.println( "Skipps interface " + getLinkPlacement(src));
 			}
 		}
 
 		//Check if the sender is known. if not add it to the routing table
-		if ( (getLink( ((Message) ev).source().networkId() ) == null) ||
-			 (getLink( ((Message) ev).source().networkId() ) != src) )
+		if ( getLink( ((Message) ev).source().networkId() ) != src )
 		{
-			System.out.println("Router adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
+			System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
 			
 			addTableEntry(getLinkPlacement(src), ((Message) ev).source());
 		}
