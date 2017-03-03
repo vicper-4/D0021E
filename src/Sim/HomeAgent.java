@@ -33,7 +33,7 @@ public class HomeAgent extends Node {
 		{
 			recvRegReq(ev);
 		}
-		else if (ev instanceof Message)
+		else if ((ev instanceof Message) && !(ev instanceof RedirMsg))
 		{
 			recvMsg(ev);
 		}

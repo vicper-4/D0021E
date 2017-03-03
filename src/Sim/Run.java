@@ -6,14 +6,14 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
-		Link link1 = new Link();
-		Link link2 = new Link();
+		//Link link1 = new Link();
+		//Link link2 = new Link();
 		Link link3 = new Link();
 		Link link4 = new Link();
 		Link link5 = new Link();
 
-		//Link link1 = new LossyLink(1.5f,0.2f,0.05f);
-		//Link link2 = new LossyLink(2.0f, 0.1f, 0.08f);
+		Link link1 = new LossyLink(0.4f,0.2f,0.0f);
+		Link link2 = new LossyLink(0.2f, 0.1f, 0.0f);
 	
 		Sink sink1 = new Sink();
 		Sink sink2 = new Sink();
@@ -24,9 +24,9 @@ public class Run {
 		Node host2 = new Node(2,1, sink2);
 		Node host3 = new Node(3,1, sink3);
 
-		Node ha = new HomeAgent(4,2, sink3);
-		ha.setPeer(link5);
-		host2.setHA(new NetworkAddr(4, 2));
+		//Node ha = new HomeAgent(4,2, sink3);
+		//ha.setPeer(link5);
+		//host2.setHA(new NetworkAddr(4, 2));
 
 		//Connect links to hosts
 		host1.setPeer(link1);
