@@ -5,23 +5,33 @@ package Sim;
 
 public class TableEntry {
 
-	private SimEnt _link;
-	private SimEnt _node;
+	private int _interface;
+	private NetworkAddr _address;
+	private TableEntry next;
 	
-	TableEntry(SimEnt link, SimEnt node)
+	TableEntry(int _interface, NetworkAddr _address)
 	{
-		_link=link;
-		_node=node;
-	}
-	
-	protected SimEnt link()
-	{
-		return _link;
+		this._interface = _interface;
+		this._address = _address;
 	}
 
-	protected SimEnt node()
+	public void setNext(TableEntry next)
 	{
-		return _node;
+		this.next = next;
 	}
 	
+	protected int getNic()
+	{
+		return _interface;
+	}
+
+	protected NetworkAddr getAddr()
+	{
+		return _address;
+	}
+	
+	public TableEntry getNext()
+	{
+		return next;
+	}
 }

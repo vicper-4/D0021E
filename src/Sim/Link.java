@@ -77,7 +77,7 @@ public class Link extends SimEnt{
 
 		if(target instanceof Router)
 		{
-			((Router)target).disconnectInterface((SimEnt)this);
+			((Router)target).disconnectLink((SimEnt)this);
 		}
 		else if(target instanceof Switch)
 		{
@@ -99,7 +99,7 @@ public class Link extends SimEnt{
 
 		if(target instanceof Router)
 		{
-			((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this, other);
+			((Router)target).connectInterface(((ConnectEnt)ev).getInterface(), this);
 		}
 		else if(target instanceof Switch)
 		{

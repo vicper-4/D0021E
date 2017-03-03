@@ -26,7 +26,7 @@ public class Run {
 		//Connect links to hosts
 		host1.setPeer(link1);
 		host2.setPeer(link2);
-		host3.setPeer(link3);
+		host3.setPeer(link4);
 
 		// Creates as router and connect
 		// links to it. Information about
@@ -35,13 +35,13 @@ public class Run {
 		// Note. A switch is created in same way using the Switch class
 		Router routeNode = new Router(4);
 		Router router2 = new Router(2);
-		routeNode.connectInterface(0, link1, host1);
-		routeNode.connectInterface(1, link2, host2);
+		routeNode.connectInterface(0, link1);
+		routeNode.connectInterface(1, link2);
 
 		// Connect the two routers
-		routeNode.connectInterface(3, link3, router2);
-		router2.connectInterface(0, link3, routeNode);
-		router2.connectInterface(1, link4, host3);
+		routeNode.connectInterface(3, link3);
+		router2.connectInterface(0, link3);
+		router2.connectInterface(1, link4);
 
 
 
@@ -49,8 +49,9 @@ public class Run {
 		Generator gen1 = new ConstantGenerator(5);
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
-		host1.StartSending(2, 1, 20, gen1, 1000);
-		host3.StartSending(2, 1, 20, gen1, 3000);
+		host1.StartSending(2, 1, 20, gen2, 1000);
+		host2.StartSending(3, 1, 20, gen2, 2000);
+		host3.StartSending(1, 1, 20, gen2, 3000);
 
 		//Event disConEv1 = new DisconnectEnt(link2, host2);
 		Event disConEv2 = new DisconnectEnt(link2, routeNode);
