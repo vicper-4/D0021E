@@ -58,6 +58,8 @@ public class Node extends SimEnt {
 		{
 			((Link) _peer).unsetConnector(this);
 			this._peer = null;
+
+			_assignedRouter = false;
 		}
 	}
 	
@@ -88,7 +90,7 @@ public class Node extends SimEnt {
 		_toNetwork = network;
 		_toHost = node;
 		_seq = startSeq;
-		//startSending();
+		startSending();
 	}
 
 	private void startSending()
@@ -154,10 +156,15 @@ public class Node extends SimEnt {
 	private void recvRouterAdvertisement()
 	{
 		System.out.printf("%n!! Node %d.%d received RouterAdvertisement %n",_id.networkId(), _id.nodeId());
-		_assignedRouter = true;
-		startSending();
+		if (!_assignedRouter)
+		{
+			//startSending();
+			
+			send(_peer, new RegReq(_id, homeAgent, _seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
+		
+			_assignedRouter = true;
+		}
 
-		send(_peer, new RegReq(_id, homeAgent, _seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
 	}
 
 	/** TODO Javadoc

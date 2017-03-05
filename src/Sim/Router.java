@@ -130,8 +130,10 @@ public class Router extends SimEnt{
 
 	private void recvTimerEvent(Event ev)
 	{
-		sendRouterAdvertisement(this, ev);
-		send(this, new TimerEvent(), 15);
+		if(sentAdvertisements < 20){ // TODO ugly hack to make it stop!
+			sendRouterAdvertisement(this, ev);
+			send(this, new TimerEvent(), 50);
+		}
 	}
 
 	private int sentAdvertisements = 0;
@@ -139,17 +141,12 @@ public class Router extends SimEnt{
 	{
 		RouterAdvertisement advertisement = new RouterAdvertisement(_broadcast);
 
-		if(sentAdvertisements < 20){ // TODO ugly hack to make it stop!
-			System.out.println("!! Router sending RouterAdvertisement on all interfaces at time " + SimEngine.getTime());
-			for(int i = 0; i < _interfaces; i++)
-			{
-				send(_interface[i], advertisement, _now);
-			}
-			sentAdvertisements++;
+		System.out.println("!! Router sending RouterAdvertisement on all interfaces at time " + SimEngine.getTime());
+		for(int i = 0; i < _interfaces; i++)
+		{
+			send(_interface[i], advertisement, _now);
 		}
-		else{
-			System.exit(0); // TODO still ugly hack
-		}
+		sentAdvertisements++;
 	}
 
 	private void recvRouterSolicitation(SimEnt src, Event ev)
