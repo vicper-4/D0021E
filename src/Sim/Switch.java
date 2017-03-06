@@ -22,7 +22,7 @@ public class Switch extends SimEnt{
 	
 	public void connectPort(int portNumber, SimEnt link)
 	{
-		if (portNumber<_ports && _port[portNumber] != null)
+		if (portNumber<_ports && _port[portNumber] == null)
 		{
 			_port[portNumber] = link;
 			((Link) link).setConnector(this);
@@ -102,7 +102,7 @@ public class Switch extends SimEnt{
 	{
 		if (ev instanceof Message)
 		{
-			System.out.println("Switch handles frame with seq: " + ((Message) ev).seq() + " from node: "+ ((Message) ev).source().nodeId());
+			System.out.println("Switch handles frame from port: " + getLinkPlacement(src));
 		
 			SimEnt sendNext = null;
 			if (((Message) ev).destination() != null )
@@ -126,11 +126,14 @@ public class Switch extends SimEnt{
 				}
 			}
 
-			if ( getLink( ((Message) ev).source().networkId() ) != src )
+			if ( ((Message) ev).source() != null )
 			{
-				System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
-			
-				addTableEntry(getLinkPlacement(src), ((Message) ev).source());
+				if ( getLink( ((Message) ev).source().nodeId() ) != src )
+				{
+					System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
+
+					addTableEntry(getLinkPlacement(src), ((Message) ev).source());
+				}
 			}
 		}
 	}
