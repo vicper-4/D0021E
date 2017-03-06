@@ -9,7 +9,7 @@ public abstract class SimEnt {
 	private int _recv;
 	private double totalTransit;
 	private double jitter;
-	protected static NetworkAddr _broadcast = new NetworkAddr(0xff,0xff);
+	final static NetworkAddr _broadcast = new NetworkAddr(0xff,0xff);
 
 	protected SimEnt()
 	{	
