@@ -7,7 +7,7 @@ public class Router extends SimEnt{
 	private RouteTableEntry _routingTable;
 	private int _interfaces;
 	private SimEnt [] _interface;
-	private int _now=0;
+	private final int _now=0;
 
 	// When created, number of interfaces are defined
 	
@@ -121,7 +121,7 @@ public class Router extends SimEnt{
 		{
 			recvRouterSolicitation(src, ev);
 		}
-		else if (ev instanceof RouterAdvertisement);
+		else if (ev instanceof RouterAdvertisement); // Do not forward router advertisements
 		else if (ev instanceof Message)
 		{
 			recvMsg(src, ev);
@@ -141,7 +141,7 @@ public class Router extends SimEnt{
 	{
 		RouterAdvertisement advertisement = new RouterAdvertisement(_broadcast);
 
-		System.out.println("!! Router sending RouterAdvertisement on all interfaces at time " + SimEngine.getTime());
+		System.out.println("!! " + this + " sending RouterAdvertisement on all interfaces at time " + SimEngine.getTime());
 		for(int i = 0; i < _interfaces; i++)
 		{
 			send(_interface[i], advertisement, _now);
@@ -151,7 +151,7 @@ public class Router extends SimEnt{
 
 	private void recvRouterSolicitation(SimEnt src, Event ev)
 	{
-		System.out.println("!! Router received RouterSolicitation, sending RouterAdvertisement");
+		System.out.println("!! " + this + " received RouterSolicitation, sending RouterAdvertisement");
 		sendRouterAdvertisement(src, ev);
 	}
 
@@ -188,8 +188,9 @@ public class Router extends SimEnt{
 					//System.out.println(src + " -- " + _interface[i]);
 					send(_interface[i], ev, _now);
 				}
-				else
-			System.out.println( "Skipps interface " + getLinkPlacement(src));
+				else {
+					System.out.println("Skips interface " + getLinkPlacement(src));
+				}
 			}
 		}
 
