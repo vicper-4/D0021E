@@ -26,11 +26,11 @@ public class Router extends SimEnt{
 		if (interfaceNumber<_interfaces && _interface[interfaceNumber] == null)
 		{
 			_interface[interfaceNumber] = link;
+			((Link) link).setConnector(this);
 		}
 		else
 			System.out.println("Trying to connect to port not in router or not empty");
 		
-		((Link) link).setConnector(this);
 	}
 
 	/**

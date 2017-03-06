@@ -103,7 +103,7 @@ public class Link extends SimEnt{
 		}
 		else if(target instanceof Switch)
 		{
-			((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this, other);
+			((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this);
 		}
 		else if(target instanceof Node)
 		{

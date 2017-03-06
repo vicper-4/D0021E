@@ -5,29 +5,31 @@ package Sim;
 
 public class Switch extends SimEnt{
 
-	//private SwitchTableEntry [] _switchTable;
-	//private int _ports;
+	private SwitchTableEntry _switchTable;
+	private int _ports;
+	private SimEnt [] _port;
+	private final int _now = 0;
 	
 	// When creating the switch, the number of ports must be specified
 	Switch(int ports)
 	{
-		//_switchTable = new SwitchTableEntry[ports];
-		//_ports=ports;
+		_port = new SimEnt[ports];
+		_ports=ports;
 	}
 	
 	// This method connects links to the switch and also informs the 
 	// switch of the host connects to the other end of the link
 	
-	public void connectPort(int portNumber, SimEnt link, SimEnt node)
+	public void connectPort(int portNumber, SimEnt link)
 	{
-		//if (portNumber<_ports)
-		//{
-		//	_switchTable[portNumber] = new SwitchTableEntry(link, node);
-		//}
-		//else
-		//	System.out.println("Trying to connect to port not in switch");
+		if (portNumber<_ports && _port[portNumber] != null)
+		{
+			_port[portNumber] = link;
+			((Link) link).setConnector(this);
+		}
+		else
+			System.out.println("Trying to connect to port not in switch");
 		
-		//((Link) link).setConnector(this);
 	}
 
 	/**
@@ -36,50 +38,100 @@ public class Switch extends SimEnt{
 	*/
 	public void disconnectPort(SimEnt link)
 	{
-		//for(int i=0; i<_ports; i++)
-		//{
-		//	if (_switchTable[i] != null)
-		//	{
-		//		if (link == _switchTable[i].link())
-		//		{
-		//			_switchTable[i] = null;
-		//			((Link) link).unsetConnector(this);
-		//		}
-		//	}
-		//}
+		for(int i=0; i<_ports; i++)
+		{
+			if (link == _port[i])
+			{
+				_port[i] = null;
+				((Link) link).unsetConnector(this);
+			}
+		}
 	}
 
 	// This method searches for an entry in the switch-table that matches
 	// the host number in the destination field of a frame. The link
 	// that connects host the switch port is returned 
 	
-	private SimEnt getPort(int nodeAddress)
+	private int getPort(int nodeAddress)
 	{
-		//SimEnt port=null;
-		//for(int i=0; i<_ports; i++)
-		//	if (_switchTable[i] != null)
-		//	{
-		//		if (((Node) _switchTable[i].node()).getAddr().nodeId() == nodeAddress)
-		//		{
-		//			port = _switchTable[i].link();
-		//		}
-		//	}
-		//return port;
+		SwitchTableEntry entry = (SwitchTableEntry)_switchTable;
+
+		while(entry != null)
+		{
+			if ( entry.getId() == nodeAddress )
+				return entry.getPort();
+
+			entry = (SwitchTableEntry)entry.getNext();
+		}
+
+		return -1;
+	}
+
+	private SimEnt getLink(int nodeAddress)
+	{
+		int i = getPort(nodeAddress);
+
+		if ( i >= 0 && i < _ports )
+			return _port[i];
+
 		return null;
 	}
-	
+
+	public void addTableEntry(int _interface, NetworkAddr _address)
+	{
+		SwitchTableEntry newEntry = new SwitchTableEntry(_interface, _address);
+		
+		newEntry.setNext(_switchTable);
+		_switchTable = newEntry;
+	}
+
+	private int getLinkPlacement(SimEnt link)
+	{
+		for ( int i = 0; i < _ports; i++ )
+		{
+			if ( _port[i] == link )
+				return i;
+		}
+
+		return -1;
+	}
 	
 	// Called when a frame is received by the switch
 	
-	public void recv(SimEnt source, Event event)
+	public void recv(SimEnt src, Event ev)
 	{
-		//if (event instanceof Message)
-		//{
-		//	System.out.println("Switch handles frame with seq: " + ((Message) event).seq() + " from node: "+ ((Message) event).source().nodeId());
-		//	SimEnt sendNext = getPort(((Message) event).destination().nodeId());
-		//	System.out.println("Switch forwards to host: " + ((Message) event).destination().nodeId());		
-		//	send (sendNext, event, 0);
-	
-		//}	
+		if (ev instanceof Message)
+		{
+			System.out.println("Switch handles frame with seq: " + ((Message) ev).seq() + " from node: "+ ((Message) ev).source().nodeId());
+		
+			SimEnt sendNext = null;
+			if (((Message) ev).destination() != null )
+				sendNext = getLink(((Message) ev).destination().nodeId());
+			
+			if (sendNext != null)
+			{
+				System.out.println("Switch forwards to host: " + ((Message) ev).destination().nodeId());		
+				send (sendNext, ev, 0);
+			}
+			else
+			{
+				System.out.println( this + " does not know of recipient. Sends frame to all ports. ");
+				for(int i = 0; i < _ports; i++)
+				{
+					//Do not send packets back to the sender.
+					if(_port[i] != src)
+						send(_port[i], ev, _now);
+					else
+						System.out.println( "Skipps port " + getLinkPlacement(src));
+				}
+			}
+
+			if ( getLink( ((Message) ev).source().networkId() ) != src )
+			{
+				System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
+			
+				addTableEntry(getLinkPlacement(src), ((Message) ev).source());
+			}
+		}
 	}
 }
