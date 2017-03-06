@@ -29,7 +29,7 @@ public class Node extends SimEnt {
 	private Generator gen;
 	private Sink sink;
 	private boolean _assignedRouter = false;
-	NetworkAddr _localBroadcast = new NetworkAddr(_id.networkId(),0xff);
+	//NetworkAddr _localBroadcast = new NetworkAddr(_id.networkId(),0xff);
 
 
 	public Node (int network, int node, Sink sink)
