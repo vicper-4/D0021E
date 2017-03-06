@@ -52,6 +52,7 @@ public class Node extends SimEnt {
 		{
 			this._peer = peer;
 			((Link) _peer).setConnector(this);
+			if(_sentmsg >0) update_id(new NetworkAddr(12,this._id.nodeId())); //TODO only for testing, should be removed
 		}
 	}
 
