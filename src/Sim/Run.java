@@ -36,11 +36,13 @@ public class Run {
 		// Create a switch
 		Switch switch1 = new Switch(3);
 		switch1.connectPort(0, link1);
+		switch1.connectPort(1, link2);
+		switch1.connectPort(2, link3);
 
 		// Create hosts communicating via the routers
-		Node host1 = new Node(1,1, new Sink());
+		Node host1 = new Node(1,3, new Sink());
 		Node host2 = new Node(2,1, new Sink());
-		Node host3 = new Node(3,1, new Sink());
+		Node host3 = new Node(3,4, new Sink());
 
 		// Setup a Home Agent
 		Node ha = new HomeAgent(4,2, new Sink());
@@ -57,13 +59,15 @@ public class Run {
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
 		host1.up(2, 1, 100, gen2, 1000);
-		host2.up(3, 1, 100, gen2, 2000);
-		host3.up(1, 1, 100, gen2, 3000);
+		host2.up(3, 4, 100, gen2, 2000);
+		host3.up(1, 3, 100, gen2, 3000);
 
 		//events to move a MN
 		Event disConEv2 = new DisconnectEnt(link3, host2);
+		Event disConEv3 = new DisconnectEnt(link3, switch1);
 		Event conEv2 = new ConnectEnt(link7, host2);
 		host2.send(link3, disConEv2, 35);
+		switch1.send(link3, disConEv3, 35);
 		host2.send(link7, conEv2, 75);
 
 		// Start the simulation engine and of we go!
