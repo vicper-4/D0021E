@@ -70,7 +70,7 @@ public class HomeAgent extends Node {
 
 		if (redirAddr != null)
 		{
-			send(_peer, new RedirMsg( ((Message) ev).destination(), redirAddr._address, 0, ev), 0);
+			send(_peer, new RedirMsg( _id, redirAddr._address, 0, ev), 0);
 
 			System.out.println("HA recives message intended for registerd mobile node");
 		}
@@ -86,5 +86,11 @@ public class HomeAgent extends Node {
 											 );
 		entry._next = addrList;
 		addrList = entry;
+		
+		send(_peer, 
+			 new BindUpdate( new NetworkAddr(_id.networkId(), ((Message) ev).source().nodeId()), 
+			 				 ((Message) ev).source(), 0, 0, _id),
+			 0
+			);
 	}
 }
