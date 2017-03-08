@@ -132,7 +132,7 @@ public class Switch extends SimEnt{
 
 			if ( ((Message) ev).source() != null )
 			{
-				if ( getLink( ((Message) ev).source().nodeId(), getLinkPlacement(src)) != src )
+				if ( getLink( ((Message) ev).source().nodeId(), -1) != src )
 				{
 					System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
 
