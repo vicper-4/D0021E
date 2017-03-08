@@ -63,7 +63,7 @@ public class Link extends SimEnt{
 		{
 			send(_connectorB, ev, _now);
 		}
-		else
+		else if (src == _connectorB)
 		{
 			send(_connectorA, ev, _now);
 		}
