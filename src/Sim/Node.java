@@ -253,7 +253,7 @@ public class Node extends SimEnt {
 					     _deprecated_id),
 			 delay);
 
-		System.out.printf("Link received message to deprecated address,"
+		System.out.printf("Node " + _id.toString() + " received message to deprecated address,"
 				+ " new address sent to sender %n");
 	}
 
@@ -275,7 +275,6 @@ public class Node extends SimEnt {
 	 */
 	private void sendBindAck()
 	{
-
 		// generate ack to sender
 		int delay = 0;
 		int seq   = 0;
