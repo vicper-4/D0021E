@@ -166,7 +166,7 @@ public class Node extends SimEnt {
 	}
 
 	// TODO JavaDoc
-	private void recvRouterAdvertisement()
+	protected void recvRouterAdvertisement()
 	{
 		System.out.printf("%n!! Node %d.%d received RouterAdvertisement %n",_id.networkId(), _id.nodeId());
 

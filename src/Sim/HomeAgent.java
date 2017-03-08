@@ -33,6 +33,10 @@ public class HomeAgent extends Node {
 		{
 			recvRegReq(ev);
 		}
+		else if (ev instanceof RouterAdvertisement)
+		{
+			super.recvRouterAdvertisement();
+		}
 		else if ((ev instanceof Message) && !(ev instanceof RedirMsg))
 		{
 			recvMsg(ev);
@@ -66,7 +70,7 @@ public class HomeAgent extends Node {
 
 		if (redirAddr != null)
 		{
-			send(_peer, new RedirMsg( _id, redirAddr._address, 0, ev), 0);
+			send(_peer, new RedirMsg( ((Message) ev).destination(), redirAddr._address, 0, ev), 0);
 
 			System.out.println("HA recives message intended for registerd mobile node");
 		}
