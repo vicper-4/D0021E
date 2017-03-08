@@ -52,13 +52,13 @@ public class Switch extends SimEnt{
 	// the host number in the destination field of a frame. The link
 	// that connects host the switch port is returned 
 	
-	private int getPort(int nodeAddress)
+	private int getPort(int nodeAddress, int srcPort)
 	{
 		SwitchTableEntry entry = (SwitchTableEntry)_switchTable;
 
 		while(entry != null)
 		{
-			if ( entry.getId() == nodeAddress )
+			if ( entry.getId() == nodeAddress && entry.getPort() != srcPort)
 				return entry.getPort();
 
 			entry = (SwitchTableEntry)entry.getNext();
@@ -67,9 +67,9 @@ public class Switch extends SimEnt{
 		return -1;
 	}
 
-	private SimEnt getLink(int nodeAddress)
+	private SimEnt getLink(int nodeAddress, int srcPort)
 	{
-		int i = getPort(nodeAddress);
+		int i = getPort(nodeAddress, srcPort);
 
 		if ( i >= 0 && i < _ports )
 			return _port[i];
@@ -102,13 +102,11 @@ public class Switch extends SimEnt{
 	{
 		if (ev instanceof Message)
 		{
-			boolean sendToAll = true;
-
 			System.out.println("Switch handles frame from port: " + getLinkPlacement(src));
 		
 			SimEnt sendNext = null;
 			if (((Message) ev).destination() != null )
-				sendNext = getLink(((Message) ev).destination().nodeId());
+				sendNext = getLink(((Message) ev).destination().nodeId(), getLinkPlacement(src));
 			
 			if (sendNext != null)
 			{
@@ -117,11 +115,9 @@ public class Switch extends SimEnt{
 				if (sendNext != src)
 				{
 					send (sendNext, ev, 0);
-					sendToAll = false;
 				}
 			}
-
-			if (sendToAll)
+			else
 			{
 				System.out.println( this + " does not know of recipient. Sends frame to all ports. ");
 				for(int i = 0; i < _ports; i++)
@@ -136,7 +132,7 @@ public class Switch extends SimEnt{
 
 			if ( ((Message) ev).source() != null )
 			{
-				if ( getLink( ((Message) ev).source().nodeId() ) != src )
+				if ( getLink( ((Message) ev).source().nodeId(), getLinkPlacement(src)) != src )
 				{
 					System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
 

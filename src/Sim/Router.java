@@ -60,13 +60,13 @@ public class Router extends SimEnt{
 	//	}
 	//}
 
-	private int getInterface(int networkAddress)
+	private int getInterface(int networkAddress, int srcInterface)
 	{
 		RouteTableEntry entry = (RouteTableEntry)_routingTable;
 
 		while(entry != null)
 		{
-			if ( entry.getAddress() == networkAddress )
+			if ( entry.getAddress() == networkAddress && entry.getInterface() != srcInterface )
 				return entry.getInterface();
 
 			entry = (RouteTableEntry)entry.getNext();
@@ -80,9 +80,9 @@ public class Router extends SimEnt{
 	// returned is the one thru which the router previously has recived a
 	// message from that address
 	
-	private SimEnt getLink(int networkAddress)
+	private SimEnt getLink(int networkAddress, int srcInterface)
 	{
-		int i = getInterface(networkAddress);
+		int i = getInterface(networkAddress, srcInterface);
 
 		if ( i >= 0 && i < _interfaces )
 			return _interface[i];
@@ -161,7 +161,7 @@ public class Router extends SimEnt{
 		
 		SimEnt sendNext = null;
 		if (((Message) ev).destination() != null )
-			sendNext = getLink(((Message) ev).destination().networkId());
+			sendNext = getLink(((Message) ev).destination().networkId(), getLinkPlacement(src));
 
 		// Send it along
 		if ( sendNext != null && ((Message) ev).ttl-- >= 0 )
@@ -195,7 +195,7 @@ public class Router extends SimEnt{
 		}
 
 		//Check if the sender is known. if not add it to the routing table
-		if ( getLink( ((Message) ev).source().networkId() ) != src )
+		if ( getLink( ((Message) ev).source().networkId(), getLinkPlacement(src) ) != src )
 		{
 			System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
 			
