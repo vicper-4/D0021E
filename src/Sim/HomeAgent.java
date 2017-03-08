@@ -17,6 +17,7 @@ public class HomeAgent extends Node {
 		}
 	}
 
+	// First entry in list of registered addresses. 
 	private AddressEntry addrList;
 
 	public HomeAgent (int network, int node, Sink sink)
@@ -37,10 +38,21 @@ public class HomeAgent extends Node {
 		{
 			super.recvRouterAdvertisement();
 		}
-		else if ((ev instanceof Message) && !(ev instanceof RedirMsg))
+		else if (ev instanceof RedirMsg)
+		{
+			recvRedir(ev);
+		}
+		else if (ev instanceof Message)
 		{
 			recvMsg(ev);
 		}
+	}
+
+	private void recvRedir(Event ev)
+	{
+		//TODO check that the sender is registered
+		System.out.println("HA " +_id.toString() + " recives message from registerd mobile node");
+		send(_peer, ((RedirMsg) ev).getOriginal(), 0);
 	}
 	
 	private void recvMsg(Event ev)
@@ -72,13 +84,19 @@ public class HomeAgent extends Node {
 		{
 			send(_peer, new RedirMsg( _id, redirAddr._address, 0, ev), 0);
 
-			System.out.println("HA recives message intended for registerd mobile node");
+			System.out.println( "HA " + _id.toString() + 
+								" recives message intended for registerd mobile node " +
+								redirAddr._address.toString()
+							  );
 		}
 	}
 
 	private void recvRegReq(Event ev)
 	{
-		System.out.println("HA recives request to register mobile node");
+		System.out.println( "HA " + _id.toString() + 
+							" recives request to register mobile node " + 
+							((RegReq) ev).source().toString()
+						  );
 
 		AddressEntry entry = new AddressEntry( ((RegReq) ev).source(), 
 											   ((RegReq) ev)._valid, 
@@ -87,6 +105,8 @@ public class HomeAgent extends Node {
 		entry._next = addrList;
 		addrList = entry;
 		
+		System.out.println("Sends bind update to router");
+
 		send(_peer, 
 			 new BindUpdate( new NetworkAddr(_id.networkId(), ((Message) ev).source().nodeId()), 
 			 				 ((Message) ev).source(), 0, 0, _id),
