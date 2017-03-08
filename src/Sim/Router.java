@@ -164,8 +164,11 @@ public class Router extends SimEnt{
 			sendNext = getLink(((Message) ev).destination().networkId(), getLinkPlacement(src));
 
 		// Send it along
-		if ( sendNext != null && ((Message) ev).ttl-- >= 0 )
+		if ( sendNext != null && ((Message) ev).ttl > 0 )
 		{
+			//Decrement ttl by one
+			((Message) ev).ttl--;
+
 			send(sendNext, ev, _now);
 
 			System.out.println( this + " sends to node: " + 
@@ -176,8 +179,11 @@ public class Router extends SimEnt{
 							  );
 		}
 		//TODO should we realy send to all interfaces?
-		else if ( ((Message) ev).ttl >= 0 )
+		else if ( ((Message) ev).ttl > 0 )
 		{
+			//Decrement ttl by one
+			((Message) ev).ttl--;
+
 			System.out.println( this + " forwards message to unknown address to all interfaces. ");
 
 			for(int i = 0; i < _interfaces; i++)
