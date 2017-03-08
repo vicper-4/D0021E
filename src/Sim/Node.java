@@ -12,6 +12,7 @@ public class Node extends SimEnt {
 	public void update_id(NetworkAddr _id) {
 		this._deprecated_id = this._id;
 		this._id = _id;
+		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
 
 		// Register with HomeAgent
 		if (homeAgent != null)
@@ -29,7 +30,7 @@ public class Node extends SimEnt {
 	private Generator gen;
 	private Sink sink;
 	private boolean _assignedRouter = false;
-	//NetworkAddr _localBroadcast = new NetworkAddr(_id.networkId(),0xff);
+	NetworkAddr _localBroadcast = null;
 
 
 	public Node (int network, int node, Sink sink)
@@ -37,6 +38,7 @@ public class Node extends SimEnt {
 		super();
 		_id = new NetworkAddr(network, node);
 		this.sink = sink;
+		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
 	}
 	
 	public void setHA(NetworkAddr ha)
@@ -246,15 +248,20 @@ public class Node extends SimEnt {
 		//generate a new message to the sender
 		int delay = 0;
 		int seq   = 0;
-		send(_peer,
-			 new BindUpdate(_id,
-						 new NetworkAddr(_toNetwork, _toHost),
-						 seq,
-					     _deprecated_id),
-			 delay);
 
-		System.out.printf("Node " + _id.toString() + " received message to deprecated address,"
-				+ " new address sent to sender %n");
+		//send(_peer,
+			// new RedirMsg(_id,
+			//			  homeAgent,
+			//			  0,
+		//				  new BindUpdate(_id, //!!!!!!!!
+		//				 				 new NetworkAddr(_toNetwork, _toHost),
+		//				 				 0,
+		//			     				 _deprecated_id), //!!!!!!!!!!!!
+			//			 ),
+		//	 delay);
+
+		System.out.printf("Node " + _id.toString() + " received message to deprecated address %n");
+		//		+ " new address sent to sender %n");
 	}
 
 	/**
