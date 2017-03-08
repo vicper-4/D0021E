@@ -102,6 +102,8 @@ public class Switch extends SimEnt{
 	{
 		if (ev instanceof Message)
 		{
+			boolean sendToAll = true;
+
 			System.out.println("Switch handles frame from port: " + getLinkPlacement(src));
 		
 			SimEnt sendNext = null;
@@ -110,10 +112,16 @@ public class Switch extends SimEnt{
 			
 			if (sendNext != null)
 			{
-				System.out.println("Switch forwards to host: " + ((Message) ev).destination().nodeId());		
-				send (sendNext, ev, 0);
+				System.out.println("Switch forwards to host: " + ((Message) ev).destination().nodeId());
+
+				if (sendNext != src)
+				{
+					send (sendNext, ev, 0);
+					sendToAll = false;
+				}
 			}
-			else
+
+			if (sendToAll)
 			{
 				System.out.println( this + " does not know of recipient. Sends frame to all ports. ");
 				for(int i = 0; i < _ports; i++)
