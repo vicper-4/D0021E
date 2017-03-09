@@ -108,6 +108,21 @@ public class Node extends SimEnt {
 		send(this, new TimerEvent(),0);
 	}
 
+	/*protected boolean acceptMsg(NetworkAddr destination)
+	{
+		int netId = destination.networkId();
+		int nodeId = destination.nodeId();
+
+		switch (netId) {
+			case _localBroadcast.networkId():
+				return true;
+			case _
+		}
+
+		return ( netId == _localBroadcast.networkId() ||
+				 net == _
+	}*/
+
 //**********************************************************************************
 	
 	// This method is called upon that an event destined for this node triggers.
@@ -175,6 +190,7 @@ public class Node extends SimEnt {
 		if (!_assignedRouter)
 		{
 			_assignedRouter = true;
+			send(_peer, new BindAck(_id, _localBroadcast, 0, 0), 0);
 		}
 	}
 
