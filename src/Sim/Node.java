@@ -17,7 +17,9 @@ public class Node extends SimEnt {
 		// Register with HomeAgent. TODO should probably check so that it has a registered router
 		if (homeAgent != null)
 		{
-			send(_peer, new RegReq(_id, homeAgent, _seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
+			final int seq = 20; //For easy identification of RegReqs.
+			// TODO Should also make a proper sendRegReq as with all other messages
+			send(_peer, new RegReq(_id, homeAgent, seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
 		}
 	}
 
@@ -58,7 +60,7 @@ public class Node extends SimEnt {
 			//TODO only for testing, should be removed
 			// Gives node new net address to simulate a move between nets
 			if(_sentmsg >0){
-				update_id(new NetworkAddr(12,this._id.nodeId()));
+				update_id(new NetworkAddr(7,this._id.nodeId()));
 				System.out.printf("Node %s has moved, setting new net address to %s,"
 						+ "status of _assignedRouter is %s %n",
 						_deprecated_id, _id, _assignedRouter);
@@ -177,6 +179,8 @@ public class Node extends SimEnt {
 		else if (_stopSendingAfter > _sentmsg)
 		{
 			_sentmsg++;
+
+			// TODO sending of messages should be factored out into own method.
 			send(_peer, new Message(_id, new NetworkAddr(_toNetwork,
 														 _toHost),
 									_seq), 0);

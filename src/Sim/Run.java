@@ -40,14 +40,14 @@ public class Run {
 		switch1.connectPort(2, link3);
 
 		// Create hosts communicating via the routers
-		Node host1 = new Node(1,3, new Sink());
-		Node host2 = new Node(2,1, new Sink());
-		Node host3 = new Node(3,4, new Sink());
+		Node host1 = new Node(4,1, new Sink());
+		Node host2 = new Node(1,2, new Sink());
+		Node host3 = new Node(6,3, new Sink());
 
 		// Setup a Home Agent
-		Node ha = new HomeAgent(4,2, new Sink());
+		Node ha = new HomeAgent(1,4, new Sink());
 		ha.setPeer(link2);
-		host2.setHA(new NetworkAddr(4, 2));
+		host2.setHA(new NetworkAddr(1,4));
 
 		//Connect links to hosts
 		host1.setPeer(link4);
@@ -58,9 +58,9 @@ public class Run {
 		Generator gen1 = new ConstantGenerator(5);
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
-		host1.up(2, 1, 100, gen2, 1000);
-		host2.up(3, 4, 100, gen2, 2000);
-		host3.up(1, 3, 100, gen2, 3000);
+		host1.up(1, 2, 100, gen2, 1000);
+		host2.up(6, 3, 3,   gen2, 2000);
+		host3.up(4, 1, 3,   gen2, 3000);
 
 		//events to move a MN
 		Event disConEv2 = new DisconnectEnt(link3, host2);
