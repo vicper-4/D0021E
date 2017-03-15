@@ -81,8 +81,7 @@ public class Link extends SimEnt{
 		}
 		else if(target instanceof Switch)
 		{
-			//TODO implement disconnection in Switch first. See Router for
-			//how to do it.
+			((Switch)target).disconnectLink((SimEnt)this);
 		}
 		else if(target instanceof Node)
 		{
