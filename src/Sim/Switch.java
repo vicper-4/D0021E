@@ -36,7 +36,7 @@ public class Switch extends SimEnt{
 	* This method disconnects links from the switch and also removes switch
 	* table information about what is connected to the other end of that link
 	*/
-	public void disconnectPort(SimEnt link)
+	public void disconnectLink(SimEnt link)
 	{
 		for(int i=0; i<_ports; i++)
 		{
@@ -132,6 +132,7 @@ public class Switch extends SimEnt{
 
 			if ( ((Message) ev).source() != null )
 			{
+				//Check if the sender is known (check all ports). if not add it to the table
 				if ( getLink( ((Message) ev).source().nodeId(), -1) != src )
 				{
 					System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));

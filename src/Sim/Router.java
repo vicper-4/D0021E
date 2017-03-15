@@ -200,8 +200,8 @@ public class Router extends SimEnt{
 			}
 		}
 
-		//Check if the sender is known. if not add it to the routing table
-		if ( getLink( ((Message) ev).source().networkId(), getLinkPlacement(src) ) != src )
+		//Check if the sender is known (check all interfaces). if not add it to the routing table
+		if ( getLink( ((Message) ev).source().networkId(), -1 ) != src )
 		{
 			System.out.println( this + " adds node: "+((Message) ev).source().networkId()+"." + ((Message) ev).source().nodeId() + " at interface: " + getLinkPlacement(src));
 			
