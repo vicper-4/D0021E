@@ -14,7 +14,7 @@ public class Node extends SimEnt {
 		this._id = _id;
 		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
 
-		// Register with HomeAgent
+		// Register with HomeAgent. TODO should probably check so that it has a registered router
 		if (homeAgent != null)
 		{
 			send(_peer, new RegReq(_id, homeAgent, _seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
@@ -54,7 +54,16 @@ public class Node extends SimEnt {
 		{
 			this._peer = peer;
 			((Link) _peer).setConnector(this);
-			if(_sentmsg >0) update_id(new NetworkAddr(12,this._id.nodeId())); //TODO only for testing, should be removed
+
+			//TODO only for testing, should be removed
+			// Gives node new net address to simulate a move between nets
+			if(_sentmsg >0){
+				update_id(new NetworkAddr(12,this._id.nodeId()));
+				System.out.printf("Node %s has moved, setting new net address to %s,"
+						+ "status of _assignedRouter is %s %n",
+						_deprecated_id, _id, _assignedRouter);
+				send(this, new TimerEvent(), 0); // Makes sure that the eventloop for this Node does not stop after a move if all messages are sent.
+			}
 		}
 	}
 
@@ -70,6 +79,7 @@ public class Node extends SimEnt {
 			this._peer = null;
 
 			_assignedRouter = false;
+			System.out.println("-- Node " + _id + "disconnects interface from link and drops assigned router");
 		}
 	}
 	
@@ -179,7 +189,6 @@ public class Node extends SimEnt {
 					+ " at time " + SimEngine.getTime());
 			_seq++;
 		}
-
 	}
 
 	// TODO JavaDoc
@@ -222,6 +231,7 @@ public class Node extends SimEnt {
 		if (_deprecated_id != null) {
 			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
 					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
+				// Is this what was moved into sendBindUpdate? TODO talk with Viking
 			}
 		}
 	}
@@ -233,6 +243,7 @@ public class Node extends SimEnt {
 	private void recvRedirMsg(Event ev)
 	{
 		send(this, ((RedirMsg) ev).getOriginal(), 0);
+		// Is this why sendBindUpdate is broken? We seem to have a serious case of spaghetti here... TODO talk with Viking
 		sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
 	}
 
@@ -256,22 +267,24 @@ public class Node extends SimEnt {
 	 * Sends a Bind Update to last sender to update its record of the network address of this node.
 	 * @param sender the record to be updated
 	 */
-	private void sendBindUpdate(NetworkAddr sender)
+	private void sendBindUpdate(NetworkAddr sender) //TODO should take a TTL
 	{
 		_toNetwork = sender.networkId();
 		_toHost = sender.nodeId();
 
 		//generate a new message to the sender
 		int delay = 0;
-		int seq   = 0;
+		int seq   = 10; // To indicate it's a BindUpdate
 
+		// who decided that a method named sendBindUpdate should send a RedirMessage?? is this related to the unrelated output string (that should probably be moved somewhere else?
+		// TODO This is obviously some late night, too much coffee, work. Viking and I will have words.
 		//send(_peer,
 			// new RedirMsg(_id,
 			//			  homeAgent,
 			//			  0,
 		//				  new BindUpdate(_id, //!!!!!!!!
 		//				 				 new NetworkAddr(_toNetwork, _toHost),
-		//				 				 0,
+		//				 				 seq,
 		//			     				 _deprecated_id), //!!!!!!!!!!!!
 			//			 ),
 		//	 delay);
@@ -286,7 +299,6 @@ public class Node extends SimEnt {
 	 */
 	private void recvBindUpdate(NetworkAddr newAddr)
 	{
-		// if real BindAck it would also send an ack to the mobile node
 		System.out.println("recvBindUpdate on " + _id.networkId() + "." + _id.nodeId());
 		_toNetwork = newAddr.networkId();
 		_toHost = newAddr.nodeId();
@@ -300,7 +312,7 @@ public class Node extends SimEnt {
 	{
 		// generate ack to sender
 		int delay = 0;
-		int seq   = 0;
+		int seq   = 11; // Bad way to see it's a BindAck
 		send( _peer,
 			new BindAck( _id,
 						new NetworkAddr( _toNetwork, _toHost ),
