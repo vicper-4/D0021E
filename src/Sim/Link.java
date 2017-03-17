@@ -63,7 +63,7 @@ public class Link extends SimEnt{
 		{
 			send(_connectorB, ev, _now);
 		}
-		else
+		else if (src == _connectorB)
 		{
 			send(_connectorA, ev, _now);
 		}
@@ -81,8 +81,7 @@ public class Link extends SimEnt{
 		}
 		else if(target instanceof Switch)
 		{
-			//TODO implement disconnection in Switch first. See Router for
-			//how to do it.
+			((Switch)target).disconnectLink((SimEnt)this);
 		}
 		else if(target instanceof Node)
 		{
@@ -103,7 +102,7 @@ public class Link extends SimEnt{
 		}
 		else if(target instanceof Switch)
 		{
-			((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this, other);
+			((Switch)target).connectPort(((ConnectEnt)ev).getInterface(), this);
 		}
 		else if(target instanceof Node)
 		{
