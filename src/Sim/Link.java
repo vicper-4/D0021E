@@ -67,6 +67,11 @@ public class Link extends SimEnt{
 		{
 			send(_connectorA, ev, _now);
 		}
+		else
+		{
+			send(_connectorA, ev, _now);
+			send(_connectorB, ev, _now);
+		}
 	}
 
 	protected void recvDisc(SimEnt src, Event ev)
