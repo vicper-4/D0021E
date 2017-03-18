@@ -32,6 +32,7 @@ public class MessageBuffer {
 		}
 
 		buffered--;
+		buffer[buffered] = null;
 
 		return first;
 	}

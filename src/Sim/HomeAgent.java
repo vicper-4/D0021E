@@ -10,19 +10,22 @@ public class HomeAgent extends Node {
 
 		public AddressEntry _next;
 
+		public MessageBuffer buffer;
+
 		public AddressEntry(NetworkAddr address, NetworkAddr homeAddress, double valid, double preferred)
 		{
 			_address = address;
 			_homeAddress = homeAddress;
 			_valid = valid;
 			_preferred = preferred;
+			buffer = new MessageBuffer(10); // Consider setting buffer size somewhere else
 		}
 
 		public NetworkAddr getRedirAddr(NetworkAddr homeAddr)
 		{
 			double time = SimEngine.getTime();
 			
-			if ((_homeAddress == homeAddr) && (_valid >= time))
+			if ((_homeAddress.equals(homeAddr)) && (_valid >= time))
 			{
 				return _address;
 			}
@@ -36,21 +39,23 @@ public class HomeAgent extends Node {
 			}
 		}
 		
-		public void setRedirAddr(NetworkAddr homeAddr, NetworkAddr redirAddr)
+		public AddressEntry setRedirAddr(NetworkAddr homeAddr, NetworkAddr redirAddr)
 		{
 			double time = SimEngine.getTime();
 			
-			if ((_homeAddress == homeAddr) && (_valid >= time))
+			if ((_homeAddress.equals(homeAddr)) && (_valid >= time))
 			{
 				_address = redirAddr;
 				System.out.println("HA " + _id.toString() + 
 								   " recived bind update from registered node " 
 								   + redirAddr.toString());
+				
+				return this;
 
 			}
 			else if (_next != null)
 			{
-				_next.setRedirAddr(homeAddr, redirAddr);
+				return _next.setRedirAddr(homeAddr, redirAddr);
 			}
 			else
 			{
@@ -59,12 +64,14 @@ public class HomeAgent extends Node {
 								   " recived bind update from non-registered node " 
 								   + redirAddr.toString() +
 								   ". Ignores it.");
+
+				return null;
 			}
 		}
 		
 		public void addOrUpdate(NetworkAddr src, double valid, double preferred)
 		{
-			if ( _homeAddress == src || _address == src )
+			if ( _homeAddress.equals(src) || _address.equals(src) )
 			{
 				//TODO check that the new times have sensable values i.e. not
 				//in the past. 
@@ -80,6 +87,23 @@ public class HomeAgent extends Node {
 			else
 			{
 				_next = new AddressEntry ( null, src, valid, preferred);
+			}
+		}
+
+		public void bufferMsg(NetworkAddr destination, Message msg)
+		{
+			if (_homeAddress.equals(destination))
+			{
+				buffer.addMsg(msg);
+			}
+			else if ( _next != null )
+			{
+				_next.bufferMsg(destination, msg);
+			}
+			else
+			{
+				//Maybe print something to indicate that the a message to a
+				//non-registered node was recived
 			}
 		}
 	}
@@ -141,14 +165,22 @@ public class HomeAgent extends Node {
 									redirAddr.toString()
 								  );
 			}
+			else
+			{
+				addrList.bufferMsg( ((Message) ev).destination(), (Message)ev );
+			}
 		}
 	}
 
 	private void recvBindUpdate(Event ev)
 	{
+		MessageBuffer buffer = null;
+
 		if (addrList != null)
 		{
-			addrList.setRedirAddr(((Message) ev).source(), ((BindUpdate) ev).getDeprecated());
+			buffer = addrList.setRedirAddr(	((Message) ev).source(),
+											((BindUpdate) ev).getDeprecated()
+										  ).buffer;
 		}
 		else
 		{
@@ -157,6 +189,16 @@ public class HomeAgent extends Node {
 								((Message) ev).source().toString() +
 								", but has no registered MNs"
 							  );
+		}
+
+		if (buffer != null)
+		{
+			Message tmpMsg = buffer.popMsg();
+			while (tmpMsg != null)
+			{
+				send(_peer, tmpMsg, 0);
+				tmpMsg = buffer.popMsg();
+			}
 		}
 	}
 
