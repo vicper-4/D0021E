@@ -47,7 +47,7 @@ public class Run {
 		// Setup a Home Agent
 		Node ha = new HomeAgent(1,4, new Sink());
 		ha.setPeer(link2);
-		host2.setHA(new NetworkAddr(1,4));
+		host2.setHomeAgent(new NetworkAddr(1,4));
 
 		//Connect links to hosts
 		host1.setPeer(link4);
@@ -59,15 +59,15 @@ public class Run {
 		Generator gen2 = new GaussianGenerator(4, 1);
 		Generator gen3 = new PoissonGenerator(5);
 		host1.up(1, 2, 100, gen2, 1000);
-		host2.up(6, 3, 3,   gen2, 2000);
-		host3.up(4, 1, 3,   gen2, 3000);
+		host2.up(6, 3, 1,   gen2, 2000);
+		host3.up(4, 1, 0,   gen2, 3000);
 
 		//events to move a MN
 		Event disConEv2 = new DisconnectEnt(link3, host2);
 		Event disConEv3 = new DisconnectEnt(link3, switch1);
 		Event conEv2 = new ConnectEnt(link7, host2);
 		host2.send(link3, disConEv2, 35);
-		switch1.send(link3, disConEv3, 35);
+		switch1.send(link3, disConEv3, 36);
 		host2.send(link7, conEv2, 75);
 
 		// Start the simulation engine and of we go!
@@ -82,6 +82,8 @@ public class Run {
 			host1.printStat();
 			System.out.println("Host 2.1\n-------");
 			host2.printStat();
+			System.out.println("Home Agent 4.1\n-------");
+			ha.printStat();
 		}
 		catch (Exception e)
 		{
