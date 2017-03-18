@@ -3,17 +3,84 @@ package Sim;
 public class HomeAgent extends Node {
 	private class AddressEntry {
 		public NetworkAddr _address;
+		public NetworkAddr _homeAddress;
 
 		public double _valid;
 		public double _preferred;
 
 		public AddressEntry _next;
 
-		public AddressEntry(NetworkAddr address, double valid, double preferred)
+		public AddressEntry(NetworkAddr address, NetworkAddr homeAddress, double valid, double preferred)
 		{
 			_address = address;
+			_homeAddress = homeAddress;
 			_valid = valid;
 			_preferred = preferred;
+		}
+
+		public NetworkAddr getRedirAddr(NetworkAddr homeAddr)
+		{
+			double time = SimEngine.getTime();
+			
+			if ((_homeAddress == homeAddr) && (_valid >= time))
+			{
+				return _address;
+			}
+			else if (_next != null)
+			{
+				return _next.getRedirAddr(homeAddr);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		
+		public void setRedirAddr(NetworkAddr homeAddr, NetworkAddr redirAddr)
+		{
+			double time = SimEngine.getTime();
+			
+			if ((_homeAddress == homeAddr) && (_valid >= time))
+			{
+				_address = redirAddr;
+				System.out.println("HA " + _id.toString() + 
+								   " recived bind update from registered node " 
+								   + redirAddr.toString());
+
+			}
+			else if (_next != null)
+			{
+				_next.setRedirAddr(homeAddr, redirAddr);
+			}
+			else
+			{
+				//TODO Send NACK
+				System.out.println("HA " + _id.toString() + 
+								   " recived bind update from non-registered node " 
+								   + redirAddr.toString() +
+								   ". Ignores it.");
+			}
+		}
+		
+		public void addOrUpdate(NetworkAddr src, double valid, double preferred)
+		{
+			if ( _homeAddress == src || _address == src )
+			{
+				//TODO check that the new times have sensable values i.e. not
+				//in the past. 
+				_valid = valid;
+				_preferred = preferred;
+
+				System.out.println("HA updates entry for " + src.toString()); 
+			}
+			else if ( _next != null )
+			{
+				_next.addOrUpdate(src, valid, preferred);
+			}
+			else
+			{
+				_next = new AddressEntry ( null, src, valid, preferred);
+			}
 		}
 	}
 
@@ -33,6 +100,10 @@ public class HomeAgent extends Node {
 		if (ev instanceof RegReq)
 		{
 			recvRegReq(ev);
+		}
+		else if (ev instanceof BindUpdate)
+		{
+			recvBindUpdate(ev);
 		}
 		else if (ev instanceof RouterAdvertisement)
 		{
@@ -57,36 +128,34 @@ public class HomeAgent extends Node {
 	
 	private void recvMsg(Event ev)
 	{
-		double time = SimEngine.getTime();
-		AddressEntry tmpAddr = addrList;
-		AddressEntry redirAddr = null;
-
-		while(tmpAddr != null)
+		if (addrList != null)
 		{
-			if ( (tmpAddr._address.nodeId() == ((Message) ev).destination().nodeId()) &&
-				 (tmpAddr._valid > time)
-			   )
+			NetworkAddr redirAddr = addrList.getRedirAddr( ((Message) ev).destination() );
+
+			if (redirAddr != null)
 			{
-				if (redirAddr == null) {
-					redirAddr = tmpAddr;
-				} else if ( (tmpAddr._preferred > redirAddr._preferred) || 
-							( (tmpAddr._valid > redirAddr._valid) && 
-							  (redirAddr._preferred < time)
-							)
-						  ) {
-					redirAddr = tmpAddr;
-				}
+				send(_peer, new RedirMsg( _id, redirAddr, 0, ev), 0);
+
+				System.out.println( "HA " + _id.toString() + 
+									" recives message intended for registerd mobile node " +
+									redirAddr.toString()
+								  );
 			}
-			tmpAddr = tmpAddr._next;
 		}
+	}
 
-		if (redirAddr != null)
+	private void recvBindUpdate(Event ev)
+	{
+		if (addrList != null)
 		{
-			send(_peer, new RedirMsg( _id, redirAddr._address, 0, ev), 0);
-
+			addrList.setRedirAddr(((Message) ev).source(), ((BindUpdate) ev).getDeprecated());
+		}
+		else
+		{
 			System.out.println( "HA " + _id.toString() + 
-								" recives message intended for registerd mobile node " +
-								redirAddr._address.toString()
+								"recived BindUpdate from " +
+								((Message) ev).source().toString() +
+								", but has no registered MNs"
 							  );
 		}
 	}
@@ -98,18 +167,27 @@ public class HomeAgent extends Node {
 							((RegReq) ev).source().toString()
 						  );
 
-		AddressEntry entry = new AddressEntry( ((RegReq) ev).source(), 
-											   ((RegReq) ev)._valid, 
-											   ((RegReq) ev)._preferred
-											 );
-		entry._next = addrList;
-		addrList = entry;
+		if ( addrList != null )
+		{
+			addrList.addOrUpdate( ((RegReq) ev).source(), 
+								  ((RegReq) ev)._valid, 
+								  ((RegReq) ev)._preferred
+								);
+		}
+		else
+		{
+			addrList = new AddressEntry(null, 
+										((RegReq) ev).source(), 
+										((RegReq) ev)._valid, 
+										((RegReq) ev)._preferred
+									   );
+		}
 		
 		System.out.println("Sends bind update to router");
 
 		send(_peer, 
-			 new BindUpdate( new NetworkAddr(_id.networkId(), ((Message) ev).source().nodeId()), 
-			 				 ((Message) ev).source(), 0, 0, _id),
+			 new BindUpdate( ((Message) ev).source(), 
+			 				 _broadcast, 0, 0, _id),
 			 0
 			);
 	}
