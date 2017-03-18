@@ -207,7 +207,7 @@ public class Node extends SimEnt {
 	 */
 	void recvRouterAdvertisement()
 	{
-		System.out.printf("%n!! Node %received RouterAdvertisement %n",_id);
+		System.out.printf("%n!! Node %s received RouterAdvertisement %n",_id);
 
 		if (!_assignedRouter)
 		{
