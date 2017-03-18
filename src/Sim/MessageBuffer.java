@@ -1,3 +1,5 @@
+package Sim;
+
 public class MessageBuffer {
 	Message[] buffer;
 	int bufferSize;
@@ -24,7 +26,7 @@ public class MessageBuffer {
 	{
 		Message first = buffer[0];
 
-		for (int i = 0; (i < buffered) && (i < bufferSize-1); i++;)
+		for (int i = 0; (i < buffered) && (i < bufferSize-1); i++)
 		{
 			buffer[i] = buffer[i+1];
 		}
