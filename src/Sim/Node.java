@@ -5,23 +5,6 @@ package Sim;
 
 public class Node extends SimEnt {
 
-	/**
-	 * Set a new id (network address / ip address)
- 	 * @param _id
-	 */
-	public void update_id(NetworkAddr _id) {
-		this._deprecated_id = this._id;
-		this._id = _id;
-		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
-
-		// Register with HomeAgent. TODO should probably check so that it has a registered router
-		if (homeAgent != null)
-		{
-			final int seq = 20; //For easy identification of RegReqs.
-			// TODO Should also make a proper sendRegReq as with all other messages
-			send(_peer, new RegReq(_id, homeAgent, seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
-		}
-	}
 
 	protected NetworkAddr _id;
 	private NetworkAddr _deprecated_id;
@@ -42,13 +25,33 @@ public class Node extends SimEnt {
 		this.sink = sink;
 		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
 	}
-	
-	public void setHA(NetworkAddr ha)
-	{
-		homeAgent = ha;
+
+	/**
+	 * Set a new id (network address / ip address)
+	 * @param _id   the id to update to.
+	 */
+	public void update_id(NetworkAddr _id) {
+		this._deprecated_id = this._id;
+		this._id = _id;
+		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
+
+		// Send Bind Update to closest router
+		sendBindUpdate(_localBroadcast, 0);
+
+		// Register with HomeAgent. TODO should probably check so that it has a registered router
+		if (homeAgent != null)
+		{
+			// TODO Send a bindUpdate to HomeAgent, not regReq
+			sendBindUpdate(homeAgent, 4);
+		}
 	}
+
+	public void setHomeAgent(NetworkAddr homeAgent)
+	{
+		this.homeAgent = homeAgent;
+	}
+
 	// Sets the peer to communicate with. This node is single homed
-	
 	public void setPeer (SimEnt peer)
 	{
 		if( peer instanceof Link &&
@@ -77,19 +80,23 @@ public class Node extends SimEnt {
 		if(peer instanceof Link &&
 		   peer == this._peer )
 		{
+			// Register with Home Agent so it can start buffering messages
+			sendRegReq();
+
+			// Unset the link
 			((Link) _peer).unsetConnector(this);
 			this._peer = null;
 
 			_assignedRouter = false;
-			System.out.println("-- Node " + _id + "disconnects interface from link and drops assigned router");
+			System.out.println("-- Node " + _id + " disconnects interface from link and drops assigned router");
 		}
 	}
-	
+
 	public NetworkAddr getAddr()
 	{
 		return _id;
 	}
-	
+
 	public NetworkAddr getDepr()
 	{
 		return _deprecated_id;
@@ -212,7 +219,8 @@ public class Node extends SimEnt {
 		if (!_assignedRouter)
 		{
 			_assignedRouter = true;
-			send(_peer, new BindAck(_id, _localBroadcast, 0, 0), 0);
+			// TODO refactor (or overload) sendBindAck so that can be used instead.
+			send(_peer, new BindAck(_id, _localBroadcast, 11, 0), 0);
 		}
 	}
 
@@ -239,8 +247,7 @@ public class Node extends SimEnt {
 				currTime,
 				tt);
 
-		// If message received was sent to deprecated address,
-		// give sender my current address.
+		// If message received was sent to deprecated address
 		if (_deprecated_id != null) {
 			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
 					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
@@ -251,11 +258,14 @@ public class Node extends SimEnt {
 
 	/**
 	 * Called when a message that has been redirected from an Home Agent is received.
+	 * Will unpack the encapsulated message and forward it to itself.
 	 * @param ev encapsulated message from Home Agent.
 	 */
 	private void recvRedirMsg(Event ev)
 	{
-		// TODO should do something like below IF you want route optimisation. is currently checked for in recvMsg(). Do note this code is deprecated and won't work no more
+		// should do something like below IF you want route optimisation.
+		// Is currently checked for in recvMsg(). Do note this code is deprecated and won't work no more
+
 		// sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
 
 		send(this, ((RedirMsg) ev).getOriginal(), 0);
@@ -266,15 +276,18 @@ public class Node extends SimEnt {
 	 */
 	public void printStat()
 	{
+		System.out.printf("Sent: %-4d  |  Received: %d %n", _sentmsg, sink.getReceived());
+		System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
+		System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
+		System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
+		//System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
+		//System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
+		//System.out.printf("Delay: %fms %n", sink.getDelay());
+		//System.out.printf("Jitter: %fms %n", sink.getJitter());
 		//System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
 		//System.out.printf("Deviation from average period: %fms %n", sink.getPeriodDeviation());
-		System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
-		System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
-		System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
-		//System.out.printf("Delay: %fms %n", sink.getDelay());
-		System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
-		//System.out.printf("Jitter: %fms %n", sink.getJitter());
-		System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
+
+		System.out.println();
 	}
 
 	/**
@@ -342,5 +355,32 @@ public class Node extends SimEnt {
 				delay);
 
 		System.out.println("Node" + _id +" sends Bind Ack.");
+	}
+
+	/**
+	 * Sends a registration request to a default preconfigured
+	 */
+	private void sendRegReq()
+	{
+		final int seq = 20; //For easy identification of RegReqs.
+		final double validTime = SimEngine.getTime() + 100;
+		final double preferredTime = SimEngine.getTime() + 150;
+
+		System.out.printf("Node %s sends RegReq to %s%n", _id, homeAgent);
+
+		send(_peer,
+				new RegReq(_id,
+						homeAgent,
+						seq,
+						validTime,
+						preferredTime),
+				0);
+	}
+
+	private void sendRegReq(NetworkAddr homeAgent, int seq, int validTime, int preferredTime)
+	{
+		send(_peer,
+				new RegReq(_id, homeAgent, seq, validTime, preferredTime),
+				0);
 	}
 }
