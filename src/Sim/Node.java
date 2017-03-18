@@ -120,7 +120,14 @@ public class Node extends SimEnt {
 		send(this, new TimerEvent(),0);
 	}
 
-	/*protected boolean acceptMsg(NetworkAddr destination)
+	/**
+	 * Checks if the message is for this node and should be accepted.
+//	 * @param destination Destination address of the message.
+	 * @return a boolean
+	 */
+	/* Method not fully implemented
+	protected boolean acceptMsg(NetworkAddr destination)
+
 	{
 		int netId = destination.networkId();
 		int nodeId = destination.nodeId();
@@ -133,7 +140,8 @@ public class Node extends SimEnt {
 
 		return ( netId == _localBroadcast.networkId() ||
 				 net == _
-	}*/
+	}
+	*/
 
 //**********************************************************************************
 	
@@ -172,7 +180,7 @@ public class Node extends SimEnt {
 	{
 		// Check for router handshake
 		if (!_assignedRouter) {
-			System.out.printf("%n?? Node %d.%d knows of no router, sends RouterSolicitation\n",_id.networkId(), _id.nodeId());
+			System.out.printf("%n?? Node %s knows of no router, sends RouterSolicitation\n", _id);
 			send(_peer, new RouterSolicitation(_id, _broadcast,1), 0);
 			send(this, new TimerEvent(), 2);
 		}
@@ -188,17 +196,18 @@ public class Node extends SimEnt {
 			SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
 
 			// Presentation:
-			System.out.println("Node " + _id.networkId() + "."
-					+ _id.nodeId() + " sent message with seq: " + _seq
-					+ " at time " + SimEngine.getTime());
+			System.out.printf("Node %s sent message with seq: %d at time %s%n",
+					_id, _seq, SimEngine.getTime());
 			_seq++;
 		}
 	}
 
-	// TODO JavaDoc
-	protected void recvRouterAdvertisement()
+	/**
+	 * Updates the state of _assignedRouter and sends a bindAck back to the router (TODO does it really work like this?)
+	 */
+	void recvRouterAdvertisement()
 	{
-		System.out.printf("%n!! Node %d.%d received RouterAdvertisement %n",_id.networkId(), _id.nodeId());
+		System.out.printf("%n!! Node %received RouterAdvertisement %n",_id);
 
 		if (!_assignedRouter)
 		{
@@ -207,9 +216,9 @@ public class Node extends SimEnt {
 		}
 	}
 
-	/** TODO Javadoc
+	/**
 	 * Passes messages to the sink and keeps track of if a BindUpdate should be sent
-	 * @param ev  TODO
+	 * @param ev    received message to be handled
 	 */
 	private void recvMsg(Event ev)
 	{
@@ -235,7 +244,7 @@ public class Node extends SimEnt {
 		if (_deprecated_id != null) {
 			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
 					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
-				// Is this what was moved into sendBindUpdate? TODO talk with Viking
+				System.out.printf("Node " + _id.toString() + " received message to deprecated address %n");
 			}
 		}
 	}
@@ -246,9 +255,10 @@ public class Node extends SimEnt {
 	 */
 	private void recvRedirMsg(Event ev)
 	{
+		// TODO should do something like below IF you want route optimisation. is currently checked for in recvMsg(). Do note this code is deprecated and won't work no more
+		// sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
+
 		send(this, ((RedirMsg) ev).getOriginal(), 0);
-		// Is this why sendBindUpdate is broken? We seem to have a serious case of spaghetti here... TODO talk with Viking
-		sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
 	}
 
 	/**
@@ -268,33 +278,40 @@ public class Node extends SimEnt {
 	}
 
 	/**
-	 * Sends a Bind Update to last sender to update its record of the network address of this node.
-	 * @param sender the record to be updated
+	 * Sends an encapsulated message which will be unpacked at destination
+	 * and forwarded
+	 * @param forwarder address of the node that will forward the encapsulated message
+	 * @param seq       sequence number
+	 * @param message   message to be forwarded
 	 */
-	private void sendBindUpdate(NetworkAddr sender) //TODO should take a TTL
+	private void sendRedirMsg (NetworkAddr forwarder, int seq, Message message)
 	{
-		_toNetwork = sender.networkId();
-		_toHost = sender.nodeId();
+		int delay = 0;
+
+		send(_peer,
+				new RedirMsg(_id, forwarder, seq, message),
+				delay);
+	}
+
+	/**
+	 * Sends a Bind Update.
+	 * @param destination   the record to be updated
+	 * @param ttl           Time To Live
+	 */
+	private void sendBindUpdate(NetworkAddr destination, int ttl) //TODO should take a TTL
+	{
 
 		//generate a new message to the sender
 		int delay = 0;
-		int seq   = 10; // To indicate it's a BindUpdate
+		int seq   = 10; // bad hack to indicate it's a BindUpdate
 
-		// who decided that a method named sendBindUpdate should send a RedirMessage?? is this related to the unrelated output string (that should probably be moved somewhere else?
-		// TODO This is obviously some late night, too much coffee, work. Viking and I will have words.
-		//send(_peer,
-			// new RedirMsg(_id,
-			//			  homeAgent,
-			//			  0,
-		//				  new BindUpdate(_id, //!!!!!!!!
-		//				 				 new NetworkAddr(_toNetwork, _toHost),
-		//				 				 seq,
-		//			     				 _deprecated_id), //!!!!!!!!!!!!
-			//			 ),
-		//	 delay);
-
-		System.out.printf("Node " + _id.toString() + " received message to deprecated address %n");
-		//		+ " new address sent to sender %n");
+		send(_peer,
+				new BindUpdate(_id,
+						destination,
+						seq,
+						ttl,
+						_deprecated_id),
+				delay);
 	}
 
 	/**
@@ -317,10 +334,13 @@ public class Node extends SimEnt {
 		// generate ack to sender
 		int delay = 0;
 		int seq   = 11; // Bad way to see it's a BindAck
-		send( _peer,
-			new BindAck( _id,
-						new NetworkAddr( _toNetwork, _toHost ),
-						seq ),
-			delay );
+
+		send(_peer,
+				new BindAck(_id,
+						new NetworkAddr(_toNetwork, _toHost),
+						seq),
+				delay);
+
+		System.out.println("Node" + _id +" sends Bind Ack.");
 	}
 }
