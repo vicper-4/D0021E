@@ -110,7 +110,7 @@ public class Switch extends SimEnt{
 			
 			if (sendNext != null)
 			{
-				System.out.println("Switch forwards to host: " + ((Message) ev).destination().nodeId());
+				System.out.println("Switch forwards to host: " + ((Message) ev).destination() + " on port " + getPort(((Message) ev).destination().nodeId(), getLinkPlacement(src)));
 
 				if (sendNext != src)
 				{
