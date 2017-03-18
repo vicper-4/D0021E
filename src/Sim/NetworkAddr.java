@@ -29,4 +29,9 @@ public class NetworkAddr {
 	{
 		return _networkId + "." + _nodeId;
 	}
+
+	public boolean equals(NetworkAddr compare)
+	{
+		return ( (_networkId == compare.networkId()) && (_nodeId == compare.nodeId()) );
+	}
 }
