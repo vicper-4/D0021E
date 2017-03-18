@@ -229,7 +229,7 @@ public class HomeAgent extends Node {
 
 		send(_peer, 
 			 new BindUpdate( ((Message) ev).source(), 
-			 				 _broadcast, 0, 0, _id),
+			 				 _broadcast, 10, 0, _id),
 			 0
 			);
 	}
