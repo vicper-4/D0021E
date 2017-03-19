@@ -1,11 +1,10 @@
 package Sim;
 
-// This class implements an event that send a Message, currently the only
-// fields in the message are who the sender is, the destination and a sequence 
-// number
-
+/**
+ * Bind Update message type.
+ */
 public class BindUpdate extends Message{
-	private NetworkAddr _deprecatedId;
+	private final NetworkAddr _deprecatedId;
 
 	BindUpdate (NetworkAddr from, NetworkAddr to, int seq, NetworkAddr deprecated)
 	{
@@ -17,5 +16,9 @@ public class BindUpdate extends Message{
 		super(from,to,seq, ttl);
 		_deprecatedId = deprecated;
 	}
+
+	public NetworkAddr getDeprecated()
+	{
+		return _deprecatedId;
+	}
 }
-	

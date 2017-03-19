@@ -5,23 +5,6 @@ package Sim;
 
 public class Node extends SimEnt {
 
-	/**
-	 * Set a new id (network address / ip address)
- 	 * @param _id
-	 */
-	public void update_id(NetworkAddr _id) {
-		this._deprecated_id = this._id;
-		this._id = _id;
-		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
-
-		// Register with HomeAgent. TODO should probably check so that it has a registered router
-		if (homeAgent != null)
-		{
-			final int seq = 20; //For easy identification of RegReqs.
-			// TODO Should also make a proper sendRegReq as with all other messages
-			send(_peer, new RegReq(_id, homeAgent, seq, SimEngine.getTime()+100.0, SimEngine.getTime()+50.0), 0);
-		}
-	}
 
 	protected NetworkAddr _id;
 	private NetworkAddr _deprecated_id;
@@ -42,13 +25,33 @@ public class Node extends SimEnt {
 		this.sink = sink;
 		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
 	}
-	
-	public void setHA(NetworkAddr ha)
-	{
-		homeAgent = ha;
+
+	/**
+	 * Set a new id (network address / ip address)
+	 * @param _id   the id to update to.
+	 */
+	public void update_id(NetworkAddr _id) {
+		this._deprecated_id = this._id;
+		this._id = _id;
+		_localBroadcast = new NetworkAddr(_id.networkId(),0xff);
+
+		// Send Bind Update to closest router
+		sendBindUpdate(_localBroadcast, 0);
+
+		// Register with HomeAgent. TODO should probably check so that it has a registered router
+		if (homeAgent != null)
+		{
+			// TODO Send a bindUpdate to HomeAgent, not regReq
+			sendBindUpdate(homeAgent, 4);
+		}
 	}
+
+	public void setHomeAgent(NetworkAddr homeAgent)
+	{
+		this.homeAgent = homeAgent;
+	}
+
 	// Sets the peer to communicate with. This node is single homed
-	
 	public void setPeer (SimEnt peer)
 	{
 		if( peer instanceof Link &&
@@ -77,19 +80,23 @@ public class Node extends SimEnt {
 		if(peer instanceof Link &&
 		   peer == this._peer )
 		{
+			// Register with Home Agent so it can start buffering messages
+			sendRegReq();
+
+			// Unset the link
 			((Link) _peer).unsetConnector(this);
 			this._peer = null;
 
 			_assignedRouter = false;
-			System.out.println("-- Node " + _id + "disconnects interface from link and drops assigned router");
+			System.out.println("-- Node " + _id + " disconnects interface from link and drops assigned router");
 		}
 	}
-	
+
 	public NetworkAddr getAddr()
 	{
 		return _id;
 	}
-	
+
 	public NetworkAddr getDepr()
 	{
 		return _deprecated_id;
@@ -120,7 +127,14 @@ public class Node extends SimEnt {
 		send(this, new TimerEvent(),0);
 	}
 
-	/*protected boolean acceptMsg(NetworkAddr destination)
+	/**
+	 * Checks if the message is for this node and should be accepted.
+//	 * @param destination Destination address of the message.
+	 * @return a boolean
+	 */
+	/* Method not fully implemented
+	protected boolean acceptMsg(NetworkAddr destination)
+
 	{
 		int netId = destination.networkId();
 		int nodeId = destination.nodeId();
@@ -133,7 +147,8 @@ public class Node extends SimEnt {
 
 		return ( netId == _localBroadcast.networkId() ||
 				 net == _
-	}*/
+	}
+	*/
 
 //**********************************************************************************
 	
@@ -172,7 +187,7 @@ public class Node extends SimEnt {
 	{
 		// Check for router handshake
 		if (!_assignedRouter) {
-			System.out.printf("%n?? Node %d.%d knows of no router, sends RouterSolicitation\n",_id.networkId(), _id.nodeId());
+			System.out.printf("%n?? Node %s knows of no router, sends RouterSolicitation\n", _id);
 			send(_peer, new RouterSolicitation(_id, _broadcast,1), 0);
 			send(this, new TimerEvent(), 2);
 		}
@@ -188,28 +203,30 @@ public class Node extends SimEnt {
 			SimEngine.msgSent(); // Report to SimEngine that a message has been sent.
 
 			// Presentation:
-			System.out.println("Node " + _id.networkId() + "."
-					+ _id.nodeId() + " sent message with seq: " + _seq
-					+ " at time " + SimEngine.getTime());
+			System.out.printf("Node %s sent message with seq: %d at time %s%n",
+					_id, _seq, SimEngine.getTime());
 			_seq++;
 		}
 	}
 
-	// TODO JavaDoc
-	protected void recvRouterAdvertisement()
+	/**
+	 * Updates the state of _assignedRouter and sends a bindAck back to the router (TODO does it really work like this?)
+	 */
+	void recvRouterAdvertisement()
 	{
-		System.out.printf("%n!! Node %d.%d received RouterAdvertisement %n",_id.networkId(), _id.nodeId());
+		System.out.printf("%n!! Node %s received RouterAdvertisement %n",_id);
 
 		if (!_assignedRouter)
 		{
 			_assignedRouter = true;
-			send(_peer, new BindAck(_id, _localBroadcast, 0, 0), 0);
+			// TODO refactor (or overload) sendBindAck so that can be used instead.
+			send(_peer, new BindAck(_id, _localBroadcast, 11, 0), 0);
 		}
 	}
 
-	/** TODO Javadoc
+	/**
 	 * Passes messages to the sink and keeps track of if a BindUpdate should be sent
-	 * @param ev  TODO
+	 * @param ev    received message to be handled
 	 */
 	private void recvMsg(Event ev)
 	{
@@ -230,25 +247,28 @@ public class Node extends SimEnt {
 				currTime,
 				tt);
 
-		// If message received was sent to deprecated address,
-		// give sender my current address.
+		// If message received was sent to deprecated address
 		if (_deprecated_id != null) {
 			if ((((Message) ev).destination().networkId() == this._deprecated_id.networkId())
 					&& (((Message) ev).destination().nodeId() == this._deprecated_id.nodeId())) {
-				// Is this what was moved into sendBindUpdate? TODO talk with Viking
+				System.out.printf("Node " + _id.toString() + " received message to deprecated address %n");
 			}
 		}
 	}
 
 	/**
 	 * Called when a message that has been redirected from an Home Agent is received.
+	 * Will unpack the encapsulated message and forward it to itself.
 	 * @param ev encapsulated message from Home Agent.
 	 */
 	private void recvRedirMsg(Event ev)
 	{
+		// should do something like below IF you want route optimisation.
+		// Is currently checked for in recvMsg(). Do note this code is deprecated and won't work no more
+
+		// sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
+
 		send(this, ((RedirMsg) ev).getOriginal(), 0);
-		// Is this why sendBindUpdate is broken? We seem to have a serious case of spaghetti here... TODO talk with Viking
-		sendBindUpdate(((Message) ((RedirMsg) ev).getOriginal()).source());
 	}
 
 	/**
@@ -256,45 +276,55 @@ public class Node extends SimEnt {
 	 */
 	public void printStat()
 	{
+		System.out.printf("Sent: %-4d  |  Received: %d %n", _sentmsg, sink.getReceived());
+		System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
+		System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
+		System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
+		//System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
+		//System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
+		//System.out.printf("Delay: %fms %n", sink.getDelay());
+		//System.out.printf("Jitter: %fms %n", sink.getJitter());
 		//System.out.printf("Time since last received message: %fms %n", sink.getPeriod());
 		//System.out.printf("Deviation from average period: %fms %n", sink.getPeriodDeviation());
-		System.out.printf("Average period: %fms %n", sink.getAvgrPeriod());
-		System.out.printf("Deviation from average period, counting only early: %fms %n", sink.getAvgrNegativePeriodDeviation());
-		System.out.printf("Deviation from average period, counting only late: %fms %n", sink.getAvgrPossitivePeriodDeviation());
-		//System.out.printf("Delay: %fms %n", sink.getDelay());
-		System.out.printf("Average delay: %fms %n", sink.getAvgrDelay());
-		//System.out.printf("Jitter: %fms %n", sink.getJitter());
-		System.out.printf("Average jitter: %fms %n", sink.getAvgrJitter());
+
+		System.out.println();
 	}
 
 	/**
-	 * Sends a Bind Update to last sender to update its record of the network address of this node.
-	 * @param sender the record to be updated
+	 * Sends an encapsulated message which will be unpacked at destination
+	 * and forwarded
+	 * @param forwarder address of the node that will forward the encapsulated message
+	 * @param seq       sequence number
+	 * @param message   message to be forwarded
 	 */
-	private void sendBindUpdate(NetworkAddr sender) //TODO should take a TTL
+	private void sendRedirMsg (NetworkAddr forwarder, int seq, Message message)
 	{
-		_toNetwork = sender.networkId();
-		_toHost = sender.nodeId();
+		int delay = 0;
+
+		send(_peer,
+				new RedirMsg(_id, forwarder, seq, message),
+				delay);
+	}
+
+	/**
+	 * Sends a Bind Update.
+	 * @param destination   the record to be updated
+	 * @param ttl           Time To Live
+	 */
+	private void sendBindUpdate(NetworkAddr destination, int ttl) //TODO should take a TTL
+	{
 
 		//generate a new message to the sender
 		int delay = 0;
-		int seq   = 10; // To indicate it's a BindUpdate
+		int seq   = 10; // bad hack to indicate it's a BindUpdate
 
-		// who decided that a method named sendBindUpdate should send a RedirMessage?? is this related to the unrelated output string (that should probably be moved somewhere else?
-		// TODO This is obviously some late night, too much coffee, work. Viking and I will have words.
-		//send(_peer,
-			// new RedirMsg(_id,
-			//			  homeAgent,
-			//			  0,
-		//				  new BindUpdate(_id, //!!!!!!!!
-		//				 				 new NetworkAddr(_toNetwork, _toHost),
-		//				 				 seq,
-		//			     				 _deprecated_id), //!!!!!!!!!!!!
-			//			 ),
-		//	 delay);
-
-		System.out.printf("Node " + _id.toString() + " received message to deprecated address %n");
-		//		+ " new address sent to sender %n");
+		send(_peer,
+				new BindUpdate(_id,
+						destination,
+						seq,
+						ttl,
+						_deprecated_id),
+				delay);
 	}
 
 	/**
@@ -317,10 +347,40 @@ public class Node extends SimEnt {
 		// generate ack to sender
 		int delay = 0;
 		int seq   = 11; // Bad way to see it's a BindAck
-		send( _peer,
-			new BindAck( _id,
-						new NetworkAddr( _toNetwork, _toHost ),
-						seq ),
-			delay );
+
+		send(_peer,
+				new BindAck(_id,
+						new NetworkAddr(_toNetwork, _toHost),
+						seq),
+				delay);
+
+		System.out.println("Node" + _id +" sends Bind Ack.");
+	}
+
+	/**
+	 * Sends a registration request to a default preconfigured
+	 */
+	private void sendRegReq()
+	{
+		final int seq = 20; //For easy identification of RegReqs.
+		final double validTime = SimEngine.getTime() + 100;
+		final double preferredTime = SimEngine.getTime() + 150;
+
+		System.out.printf("Node %s sends RegReq to %s%n", _id, homeAgent);
+
+		send(_peer,
+				new RegReq(_id,
+						homeAgent,
+						seq,
+						validTime,
+						preferredTime),
+				0);
+	}
+
+	private void sendRegReq(NetworkAddr homeAgent, int seq, int validTime, int preferredTime)
+	{
+		send(_peer,
+				new RegReq(_id, homeAgent, seq, validTime, preferredTime),
+				0);
 	}
 }
