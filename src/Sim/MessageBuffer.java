@@ -24,16 +24,20 @@ public class MessageBuffer {
 
 	Message popMsg()
 	{
-		Message first = buffer[0];
-
-		for (int i = 0; (i < buffered) && (i < bufferSize-1); i++)
+		if (buffered > 0)
 		{
-			buffer[i] = buffer[i+1];
+			Message first = buffer[0];
+
+			for (int i = 0; (i < buffered) && (i < bufferSize-1); i++)
+			{
+				buffer[i] = buffer[i+1];
+			}
+
+			buffered--;
+
+			return first;
 		}
-
-		buffered--;
-		buffer[buffered] = null;
-
-		return first;
+		else
+			return null;
 	}
 }
