@@ -20,6 +20,22 @@ public class HomeAgent extends Node {
 			_preferred = preferred;
 			buffer = new MessageBuffer(10); // Consider setting buffer size somewhere else
 		}
+		
+		public boolean isRegistered(NetworkAddr destination)
+		{
+			if (_homeAddress.equals(destination))
+			{
+				return true;
+			}
+			else if ( _next != null )
+			{
+				return _next.isRegistered(destination);
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 		public NetworkAddr getRedirAddr(NetworkAddr homeAddr)
 		{
@@ -152,9 +168,11 @@ public class HomeAgent extends Node {
 	
 	private void recvMsg(Event ev)
 	{
+		NetworkAddr destination = ((Message) ev).destination();
+
 		if (addrList != null)
 		{
-			NetworkAddr redirAddr = addrList.getRedirAddr( ((Message) ev).destination() );
+			NetworkAddr redirAddr = addrList.getRedirAddr( destination );
 
 			if (redirAddr != null)
 			{
@@ -162,12 +180,18 @@ public class HomeAgent extends Node {
 
 				System.out.println( "HA " + _id.toString() + 
 									" recives message intended for registerd mobile node " +
-									redirAddr.toString()
+									redirAddr.toString() +
+									". Redirects it."
 								  );
 			}
-			else
+			else if ( addrList.isRegistered(destination) )
 			{
-				addrList.bufferMsg( ((Message) ev).destination(), (Message)ev );
+				System.out.println( "HA " + _id.toString() + 
+									" recives message intended for registerd mobile node." +
+									" Tries to buffer it."
+								  );
+				
+				addrList.bufferMsg( destination, (Message)ev );
 			}
 		}
 	}
@@ -178,9 +202,9 @@ public class HomeAgent extends Node {
 
 		if (addrList != null)
 		{
-			buffer = addrList.setRedirAddr(	((Message) ev).source(),
-											((BindUpdate) ev).getDeprecated()
-										  ).buffer;
+			addrList.setRedirAddr(	((BindUpdate) ev).getDeprecated(),
+									((Message) ev).source()
+								 );
 		}
 		else
 		{
