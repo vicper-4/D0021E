@@ -202,9 +202,9 @@ public class HomeAgent extends Node {
 
 		if (addrList != null)
 		{
-			addrList.setRedirAddr(	((BindUpdate) ev).getDeprecated(),
+			buffer = addrList.setRedirAddr(	((BindUpdate) ev).getDeprecated(),
 									((Message) ev).source()
-								 );
+								 ).buffer;
 		}
 		else
 		{
@@ -220,7 +220,7 @@ public class HomeAgent extends Node {
 			Message tmpMsg = buffer.popMsg();
 			while (tmpMsg != null)
 			{
-				send(_peer, tmpMsg, 0);
+				send(_peer, new RedirMsg( _id, ((Message) ev).source(), 0, tmpMsg), 0);
 				tmpMsg = buffer.popMsg();
 			}
 		}
